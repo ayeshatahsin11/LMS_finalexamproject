@@ -26,6 +26,12 @@ app.get("/", (req, res) => {
     message: "LMS API is running",
   });
 });
+app.get("/api/test", (req, res) => {
+  res.json({
+    success: true,
+    message: "Frontend and Backend are connected!",
+  });
+});
 
 const PORT = process.env.PORT || 5000;
 
