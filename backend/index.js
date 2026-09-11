@@ -3,7 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const connectDB = require("./config/database");
-
+const authRoutes = require("./routes/authRoutes");
 const app = express();
 
 // Connect MongoDB
@@ -18,6 +18,8 @@ app.use(
 );
 
 app.use(express.json());
+
+app.use("/api/auth", authRoutes);
 
 // Test route
 app.get("/", (req, res) => {
