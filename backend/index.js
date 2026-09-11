@@ -9,6 +9,7 @@ const authRoutes = require("./routes/authRoutes");
 const app = express();
 const protect = require("./middleware/authMiddleware");
 const authorizeRoles = require("./middleware/roleMiddleware");
+const courseRoutes = require("./routes/courseRoutes");
 // Connect MongoDB
 connectDB();
 
@@ -23,6 +24,8 @@ app.use(
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+
+app.use("/api/courses", courseRoutes);
 
 // Test route
 app.get("/", (req, res) => {
