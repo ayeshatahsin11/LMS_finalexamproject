@@ -1,3 +1,5 @@
+//  ============== MAIN SERVER INDEX FILE =========================// 
+
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
@@ -5,6 +7,7 @@ require("dotenv").config();
 const connectDB = require("./config/database");
 const authRoutes = require("./routes/authRoutes");
 const app = express();
+const protect = require("./middleware/authMiddleware");
 
 // Connect MongoDB
 connectDB();
@@ -32,6 +35,14 @@ app.get("/api/test", (req, res) => {
   res.json({
     success: true,
     message: "Frontend and Backend are connected!",
+  });
+});
+
+app.get("/api/auth/protected", protect, (req, res) => {
+  res.json({
+    success: true,
+    message: "You can access this protected route!",
+    user: req.user,
   });
 });
 
