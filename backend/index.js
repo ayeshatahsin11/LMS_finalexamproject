@@ -8,7 +8,7 @@ const connectDB = require("./config/database");
 const authRoutes = require("./routes/authRoutes");
 const app = express();
 const protect = require("./middleware/authMiddleware");
-
+const authorizeRoles = require("./middleware/roleMiddleware");
 // Connect MongoDB
 connectDB();
 
@@ -45,7 +45,30 @@ app.get("/api/auth/protected", protect, (req, res) => {
     user: req.user,
   });
 });
-
+app.get(
+  "/api/admin/test",
+  protect,
+  authorizeRoles("admin"),
+  (req, res) => {
+    res.json({
+      success: true,
+      message: "Welcome Admin! You have access to this route.",
+      user: req.user,
+    });
+  }
+);
+app.get(
+  "/api/student/test",
+  protect,
+  authorizeRoles("student"),
+  (req, res) => {
+    res.json({
+      success: true,
+      message: "Welcome Student! You have access to this route.",
+      user: req.user,
+    });
+  }
+);
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

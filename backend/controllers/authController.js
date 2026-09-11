@@ -3,13 +3,13 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password,role } = req.body;
 
     // Check required fields
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !role) {
       return res.status(400).json({
         success: false,
-        message: "Name, email and password are required",
+        message: "Name, email , role and password are required",
       });
     }
 
@@ -31,6 +31,7 @@ const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      role
     });
 
     res.status(201).json({
