@@ -13,6 +13,20 @@ const registerUser = async (req, res) => {
       });
     }
 
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid email address",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters",
+      });
+    }
+
     // SECURITY: never trust a role coming from the public register form.
     // Only "student" or "instructor" can self-register. "admin" accounts
     // must be created directly in the database (see seed script) or by
@@ -90,6 +104,15 @@ const loginUser = async (req, res) => {
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
+      });
+    }
+
+    // If an admin has deactivated this account, block login even with
+    // correct credentials.
+    if (!user.isActive) {
+      return res.status(403).json({
+        success: false,
+        message: "This account has been deactivated. Contact an administrator.",
       });
     }
 
