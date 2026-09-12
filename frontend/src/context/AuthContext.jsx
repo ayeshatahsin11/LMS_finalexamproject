@@ -31,9 +31,8 @@ export function AuthProvider({ children }) {
     api
       .get("/users/me")
       .then((res) => {
-        const normalized = { ...res.data.user, id: res.data.user.id || res.data.user._id };
-        setUser(normalized);
-        localStorage.setItem("lms_user", JSON.stringify(normalized));
+        setUser(res.data.user);
+        localStorage.setItem("lms_user", JSON.stringify(res.data.user));
       })
       .catch(() => {
         localStorage.removeItem("lms_token");

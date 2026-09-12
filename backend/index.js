@@ -9,8 +9,6 @@ require("dotenv").config();
 const connectDB = require("./config/database");
 const authRoutes = require("./routes/authRoutes");
 const app = express();
-const protect = require("./middleware/authMiddleware");
-const authorizeRoles = require("./middleware/roleMiddleware");
 const courseRoutes = require("./routes/courseRoutes");
 const lessonRoutes = require("./routes/lessonRoutes");
 const enrollmentRoutes = require("./routes/enrollmentRoutes");
@@ -32,7 +30,7 @@ app.use("/api", apiLimiter);
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
     credentials: true,
   })
 );
@@ -49,51 +47,35 @@ app.use("/api/enrollments", enrollmentRoutes);
 
 app.use("/api/users", userRoutes);
 
-// Test route
 app.get("/", (req, res) => {
   res.json({
     success: true,
     message: "LMS API is running",
   });
 });
-app.get("/api/test", (req, res) => {
-  res.json({
-    success: true,
-    message: "Frontend and Backend are connected!",
+
+// 404 handler - any request that didn't match a route above lands here,
+// so the client always gets clean JSON instead of an HTML error page.
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Route not found - ${req.originalUrl}`,
   });
 });
 
-app.get("/api/auth/protected", protect, (req, res) => {
-  res.json({
-    success: true,
-    message: "You can access this protected route!",
-    user: req.user,
+// Global error handler - catches anything that reaches next(err), plus
+// errors thrown by body-parsing middleware (e.g. malformed JSON) before
+// any route/controller ever runs. Without this, those cases would return
+// Express's default HTML error page instead of JSON.
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.statusCode || 500).json({
+    success: false,
+    message: err.message || "Server error",
   });
 });
-app.get(
-  "/api/admin/test",
-  protect,
-  authorizeRoles("admin"),
-  (req, res) => {
-    res.json({
-      success: true,
-      message: "Welcome Admin! You have access to this route.",
-      user: req.user,
-    });
-  }
-);
-app.get(
-  "/api/student/test",
-  protect,
-  authorizeRoles("student"),
-  (req, res) => {
-    res.json({
-      success: true,
-      message: "Welcome Student! You have access to this route.",
-      user: req.user,
-    });
-  }
-);
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
