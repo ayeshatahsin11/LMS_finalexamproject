@@ -8,29 +8,38 @@ const {
   deleteLesson,
 } = require("../controllers/lessonController");
 
-const protect = require("../middleware/authMiddleware");
+const { protect, optionalAuth } = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
 
 const router = express.Router();
 
-// Get all lessons of a course
-router.get("/course/:courseId", getCourseLessons);
+// optionalAuth: guests get locked/preview-only lesson lists; logged-in
+// enrolled students, owners, and admins get full content.
+router.get("/course/:courseId", optionalAuth, getCourseLessons);
+router.get("/:id", optionalAuth, getLessonById);
 
-// Get single lesson
-router.get("/:id", getLessonById);
-
-// Create lesson - Admin only
+// Create lesson - Instructor (owner) or Admin only
 router.post(
   "/course/:courseId",
   protect,
-  authorizeRoles("admin"),
-  createLesson,
+  authorizeRoles("instructor", "admin"),
+  createLesson
 );
 
-// Update lesson - Admin only
-router.put("/:id", protect, authorizeRoles("admin"), updateLesson);
+// Update lesson - Instructor (owner) or Admin only
+router.put(
+  "/:id",
+  protect,
+  authorizeRoles("instructor", "admin"),
+  updateLesson
+);
 
-// Delete lesson - Admin only
-router.delete("/:id", protect, authorizeRoles("admin"), deleteLesson);
+// Delete lesson - Instructor (owner) or Admin only
+router.delete(
+  "/:id",
+  protect,
+  authorizeRoles("instructor", "admin"),
+  deleteLesson
+);
 
 module.exports = router;

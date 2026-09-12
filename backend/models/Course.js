@@ -45,6 +45,16 @@ const courseSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+
+    // Bidirectional link: Lesson stores `course` (for ownership/gating checks),
+    // and Course stores this `lessons` array (for ordering + quick lesson count).
+    // Kept in sync from lessonController: pushed on create, pulled on delete.
+    lessons: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Lesson",
+      },
+    ],
   },
   {
     timestamps: true,

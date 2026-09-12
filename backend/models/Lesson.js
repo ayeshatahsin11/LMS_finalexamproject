@@ -33,10 +33,15 @@ const lessonSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+
+    isFreePreview: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 const Lesson = mongoose.model("Lesson", lessonSchema);
