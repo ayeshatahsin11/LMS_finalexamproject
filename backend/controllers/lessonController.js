@@ -58,8 +58,7 @@ const getCourseLessons = async (req, res) => {
       });
     }
 
-    const lessons = await Lesson.find({ course: courseId })
-      .sort({ order: 1 });
+    const lessons = await Lesson.find({ course: courseId }).sort({ order: 1 });
 
     res.status(200).json({
       success: true,
@@ -77,8 +76,10 @@ const getCourseLessons = async (req, res) => {
 
 const getLessonById = async (req, res) => {
   try {
-    const lesson = await Lesson.findById(req.params.id)
-      .populate("course", "title");
+    const lesson = await Lesson.findById(req.params.id).populate(
+      "course",
+      "title",
+    );
 
     if (!lesson) {
       return res.status(404).json({

@@ -24,23 +24,13 @@ router.post(
   "/course/:courseId",
   protect,
   authorizeRoles("admin"),
-  createLesson
+  createLesson,
 );
 
 // Update lesson - Admin only
-router.put(
-  "/:id",
-  protect,
-  authorizeRoles("admin"),
-  updateLesson
-);
+router.put("/:id", protect, authorizeRoles("admin"), updateLesson);
 
 // Delete lesson - Admin only
-router.delete(
-  "/:id",
-  protect,
-  authorizeRoles("admin"),
-  deleteLesson
-);
+router.delete("/:id", protect, authorizeRoles("admin"), deleteLesson);
 
 module.exports = router;

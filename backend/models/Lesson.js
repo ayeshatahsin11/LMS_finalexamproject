@@ -36,7 +36,7 @@ const lessonSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Lesson = mongoose.model("Lesson", lessonSchema);

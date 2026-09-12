@@ -26,4 +26,26 @@ const protect = (req, res, next) => {
   }
 };
 
+// For routes that work for guests AND logged-in users, but need to know
+// WHO the user is when a valid token is present (e.g. so an instructor
+// can view their own unpublished/draft course). Never blocks the request.
+const optionalAuth = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.split(" ")[1];
+    try {
+      req.user = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
+      req.user = null; // invalid/expired token -> just treat as a guest
+    }
+  } else {
+    req.user = null;
+  }
+
+  next();
+};
+
 module.exports = protect;
+module.exports.protect = protect;
+module.exports.optionalAuth = optionalAuth;

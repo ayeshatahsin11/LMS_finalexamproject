@@ -3,15 +3,21 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password,role } = req.body;
+    const { name, email, password, role } = req.body;
 
     // Check required fields
-    if (!name || !email || !password || !role) {
+    if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: "Name, email , role and password are required",
+        message: "Name, email and password are required",
       });
     }
+
+    // SECURITY: never trust a role coming from the public register form.
+    // Only "student" or "instructor" can self-register. "admin" accounts
+    // must be created directly in the database (see seed script) or by
+    // an existing admin through a protected admin-only route.
+    const allowedRole = ["student", "instructor"].includes(role) ? role : "student";
 
     // Check existing user
     const existingUser = await User.findOne({ email });
@@ -31,7 +37,7 @@ const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role
+      role: allowedRole,
     });
 
     res.status(201).json({

@@ -35,6 +35,16 @@ const courseSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+
+    isPublished: {
+      type: Boolean,
+      default: false,
+    },
+
+    enrollmentCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
