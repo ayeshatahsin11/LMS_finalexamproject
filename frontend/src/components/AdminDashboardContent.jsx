@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Users, GraduationCap, ShieldCheck, Search } from "lucide-react";
+import Link from "next/link";
+import { Users, GraduationCap, ShieldCheck, Search, Plus, BookOpen } from "lucide-react";
 import api from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorMessage from "@/components/ErrorMessage";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default function AdminDashboardContent() {
   const { user: currentUser } = useAuth();
@@ -81,7 +83,18 @@ export default function AdminDashboardContent() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
-      <h1 className="text-3xl mb-1">Admin dashboard</h1>
+      <Breadcrumbs items={[{ label: "Admin" }]} />
+      <div className="flex items-center justify-between mb-1 flex-wrap gap-3">
+        <h1 className="text-3xl">Admin dashboard</h1>
+        <div className="flex items-center gap-3">
+          <Link href="/instructor" className="btn-outline">
+            <BookOpen size={16} className="mr-1" /> My courses
+          </Link>
+          <Link href="/instructor/courses/new" className="btn-primary">
+            <Plus size={16} className="mr-1" /> Create course
+          </Link>
+        </div>
+      </div>
       <p className="text-text-muted mb-8">Manage every account on the platform.</p>
 
       <ErrorMessage message={error} />

@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorMessage from "@/components/ErrorMessage";
 import ProgressBar from "@/components/ProgressBar";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default function StudentDashboardContent() {
   const { user } = useAuth();
@@ -33,6 +34,7 @@ export default function StudentDashboardContent() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
+      <Breadcrumbs items={[{ label: "Dashboard" }]} />
       <h1 className="text-3xl mb-1">Welcome back, {user?.name?.split(" ")[0]}</h1>
       <p className="text-text-muted mb-8">Here's where you left off.</p>
 

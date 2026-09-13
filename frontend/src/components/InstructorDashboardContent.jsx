@@ -7,6 +7,7 @@ import api from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorMessage from "@/components/ErrorMessage";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default function InstructorDashboardContent() {
   const { user } = useAuth();
@@ -29,6 +30,7 @@ export default function InstructorDashboardContent() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
+      <Breadcrumbs items={[{ label: "Instructor" }]} />
       <div className="flex items-center justify-between mb-1">
         <h1 className="text-3xl">Welcome back, {user?.name?.split(" ")[0]}</h1>
         <Link href="/instructor/courses/new" className="btn-primary">
