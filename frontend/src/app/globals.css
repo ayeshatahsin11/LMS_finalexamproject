@@ -1,109 +1,185 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #14213D;
-  --color-paper: #FBF9F6;
-  --color-amber: #F2A93B;
-  --color-amber-dark: #D18F1F;
-  --color-sage: #4C7A5C;
-  --color-sage-light: #EAF2EC;
-  --color-slate: #33363D;
-  --color-slate-light: #6B7280;
-  --color-line: #E7E1D8;
-  --color-coral: #D96C4F;
+  /* Dark navy base */
+  --color-bg: #0A0E1F;
+  --color-bg-soft: #10142A;
+  --color-surface: #151A34;
+  --color-surface-hover: #1B2140;
+  --color-border: #262C4D;
+
+  /* Brand gradient trio */
+  --color-indigo: #6366F1;
+  --color-purple: #A855F7;
+  --color-pink: #EC4899;
+
+  --color-text: #F5F5F9;
+  --color-text-muted: #9AA0C3;
+  --color-text-faint: #6B7098;
+
+  --color-success: #34D399;
+  --color-danger: #F87171;
 
   --font-serif: "Fraunces", ui-serif, Georgia, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
+html {
+  background-color: var(--color-bg);
+}
+
 body {
-  background-color: var(--color-paper);
-  color: var(--color-slate);
+  background-color: var(--color-bg);
+  color: var(--color-text);
   font-family: var(--font-sans);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(168, 85, 247, 0.20), transparent 40%),
+    radial-gradient(circle at 85% 15%, rgba(236, 72, 153, 0.16), transparent 45%),
+    radial-gradient(circle at 50% 100%, rgba(99, 102, 241, 0.14), transparent 50%);
+  background-attachment: fixed;
 }
 
 h1, h2, h3, h4 {
   font-family: var(--font-serif);
-  color: var(--color-ink);
+  color: var(--color-text);
 }
 
+/* Gradient text for hero headings / accents */
+.gradient-text {
+  background-image: linear-gradient(90deg, #818CF8 0%, #C084FC 45%, #F472B6 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Primary CTA - full gradient, white text, glow on hover */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.375rem;
-  background-color: var(--color-ink);
-  color: var(--color-paper);
-  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  background-image: linear-gradient(135deg, #6366F1, #A855F7 55%, #EC4899);
+  color: #ffffff;
+  padding: 0.65rem 1.4rem;
   font-size: 0.875rem;
-  font-weight: 500;
-  transition: opacity 0.15s ease;
+  font-weight: 600;
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.25);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
 }
-.btn-primary:hover { opacity: 0.9; }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary:hover {
+  box-shadow: 0 6px 28px rgba(236, 72, 153, 0.4);
+  transform: translateY(-1px);
+}
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
+/* Accent - solid pink, dark text for contrast */
 .btn-accent {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.375rem;
-  background-color: var(--color-amber);
-  color: var(--color-ink);
-  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-pink);
+  color: #1a0a14;
+  padding: 0.65rem 1.4rem;
   font-size: 0.875rem;
   font-weight: 600;
-  transition: background-color 0.15s ease;
+  transition: filter 0.2s ease;
 }
-.btn-accent:hover { background-color: var(--color-amber-dark); }
+.btn-accent:hover { filter: brightness(1.1); }
 .btn-accent:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* Outline - subtle border, light text, fills on hover */
 .btn-outline {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.375rem;
-  border: 1px solid var(--color-line);
-  color: var(--color-ink);
-  padding: 0.5rem 1.1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  background-color: transparent;
+  padding: 0.55rem 1.2rem;
   font-size: 0.875rem;
   font-weight: 500;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
-.btn-outline:hover { border-color: var(--color-ink); }
+.btn-outline:hover {
+  border-color: var(--color-purple);
+  background-color: rgba(168, 85, 247, 0.08);
+}
 
 .input-field {
   width: 100%;
-  border-radius: 0.375rem;
-  border: 1px solid var(--color-line);
-  background-color: white;
-  padding: 0.625rem 0.875rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  padding: 0.65rem 0.9rem;
   font-size: 0.875rem;
-  color: var(--color-slate);
+  color: var(--color-text);
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
+.input-field::placeholder { color: var(--color-text-faint); }
 .input-field:focus {
-  border-color: var(--color-ink);
-  box-shadow: 0 0 0 3px rgba(20, 33, 61, 0.1);
+  border-color: var(--color-purple);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.18);
+}
+
+/* Browsers force a white/yellow background on autofilled inputs by
+   default (email/password managers). This trick uses a giant inset
+   box-shadow to paint over it with our dark surface color instead,
+   and forces the text color so it stays readable. Covers Chrome,
+   Edge, Safari, Brave (all Chromium/WebKit based). */
+.input-field:-webkit-autofill,
+.input-field:-webkit-autofill:hover,
+.input-field:-webkit-autofill:focus,
+.input-field:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset !important;
+  box-shadow: 0 0 0 1000px var(--color-surface) inset !important;
+  -webkit-text-fill-color: var(--color-text) !important;
+  caret-color: var(--color-text);
+  /* delays the browser's own transition so it never flashes white first */
+  transition: background-color 9999s ease-in-out 0s;
 }
 
 .card {
-  border-radius: 0.75rem;
-  border: 1px solid var(--color-line);
-  background-color: white;
+  border-radius: 0.9rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.card-hover {
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  border-color: rgba(168, 85, 247, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.15);
+}
+
+/* Thin gradient border wrapper, e.g. for featured cards */
+.gradient-border {
+  position: relative;
+  border-radius: 0.9rem;
+  padding: 1px;
+  background-image: linear-gradient(135deg, #6366F1, #A855F7, #EC4899);
+}
+.gradient-border > * {
+  border-radius: calc(0.9rem - 1px);
+  background-color: var(--color-surface);
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.animate-fade-in-up {
-  animation: fadeInUp 0.4s ease both;
-}
+.animate-fade-in-up { animation: fadeInUp 0.5s ease both; }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+@keyframes spin { to { transform: rotate(360deg); } }
+.animate-spin-slow { animation: spin 0.8s linear infinite; }
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
-.animate-spin-slow {
-  animation: spin 0.8s linear infinite;
-}
+.animate-glow { animation: glowPulse 3s ease-in-out infinite; }

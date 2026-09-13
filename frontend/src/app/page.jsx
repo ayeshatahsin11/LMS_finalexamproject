@@ -21,15 +21,16 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="max-w-6xl mx-auto px-6 pt-20 pb-16 grid md:grid-cols-2 gap-12 items-center">
-        <div className="animate-fade-in-up">
-          <span className="text-xs font-medium tracking-wide uppercase text-amber-dark">
+      <section className="relative max-w-6xl mx-auto px-6 pt-24 pb-20 grid md:grid-cols-2 gap-12 items-center overflow-hidden">
+        <div className="animate-fade-in-up relative z-10">
+          <span className="inline-block text-xs font-medium tracking-wide uppercase text-pink px-3 py-1 rounded-full border border-pink/30 bg-pink/5">
             Learn without limits
           </span>
-          <h1 className="text-4xl md:text-5xl leading-tight mt-3">
-            Build real skills, one lesson at a time.
+          <h1 className="text-4xl md:text-5xl leading-tight mt-4">
+            Build real skills,<br />
+            <span className="gradient-text">one lesson at a time.</span>
           </h1>
-          <p className="mt-5 text-slate-light text-lg max-w-md">
+          <p className="mt-5 text-text-muted text-lg max-w-md">
             Pathway connects instructors and students in one place — courses, video
             lessons, and progress tracking that actually keeps you moving forward.
           </p>
@@ -42,10 +43,13 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
-        <div className="hidden md:flex items-center justify-center">
-          <div className="w-full aspect-square max-w-sm rounded-2xl bg-gradient-to-br from-ink via-slate to-ink/80 relative overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="font-serif text-6xl text-amber/80">P</span>
+
+        <div className="hidden md:flex items-center justify-center relative">
+          <div className="absolute w-72 h-72 rounded-full bg-purple/30 blur-3xl animate-glow" />
+          <div className="absolute w-56 h-56 rounded-full bg-pink/20 blur-3xl translate-x-16 -translate-y-10 animate-glow" />
+          <div className="gradient-border w-full max-w-sm aspect-square relative z-10">
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="font-serif text-7xl gradient-text">P</span>
             </div>
           </div>
         </div>
@@ -55,15 +59,15 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-6 pb-24">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl">Popular courses</h2>
-          <Link href="/courses" className="text-sm text-ink underline">
-            View all
+          <Link href="/courses" className="text-sm text-purple hover:text-pink transition">
+            View all →
           </Link>
         </div>
 
         {loading ? (
           <LoadingSpinner label="Loading courses..." />
         ) : courses.length === 0 ? (
-          <p className="text-slate-light">No published courses yet. Check back soon.</p>
+          <p className="text-text-muted">No published courses yet. Check back soon.</p>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {courses.map((course) => (

@@ -30,85 +30,100 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-6 py-16">
-      <div className="w-full max-w-sm animate-fade-in-up">
-        <h1 className="text-2xl mb-1">Create your account</h1>
-        <p className="text-sm text-slate-light mb-8">Start learning or start teaching.</p>
+    <div className="min-h-[80vh] flex items-center justify-center px-6 py-16 relative overflow-hidden">
+      <div className="absolute w-80 h-80 rounded-full bg-purple/20 blur-3xl -top-10 -right-20 animate-glow" />
+      <div className="absolute w-72 h-72 rounded-full bg-indigo/15 blur-3xl bottom-0 left-0 animate-glow" />
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <ErrorMessage message={error} />
+      <div className="w-full max-w-sm relative z-10 animate-fade-in-up">
+        <div className="card p-8">
+          <h1 className="text-2xl mb-1">Create your account</h1>
+          <p className="text-sm text-text-muted mb-8">Start learning or start teaching.</p>
 
-          <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">Full name</label>
-            <input
-              type="text"
-              name="name"
-              required
-              className="input-field"
-              value={form.name}
-              onChange={handleChange}
-              placeholder="Jane Doe"
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <ErrorMessage message={error} />
 
-          <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">Email</label>
-            <input
-              type="email"
-              name="email"
-              required
-              className="input-field"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="you@example.com"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">Password</label>
-            <input
-              type="password"
-              name="password"
-              required
-              minLength={6}
-              className="input-field"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="At least 6 characters"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-ink mb-2">I am joining as a...</label>
-            <div className="grid grid-cols-2 gap-3">
-              {["student", "instructor"].map((r) => (
-                <button
-                  type="button"
-                  key={r}
-                  onClick={() => setForm({ ...form, role: r })}
-                  className={`rounded-md border px-4 py-2.5 text-sm font-medium capitalize transition ${
-                    form.role === r
-                      ? "border-ink bg-ink text-paper"
-                      : "border-line text-slate hover:border-ink/40"
-                  }`}
-                >
-                  {r}
-                </button>
-              ))}
+            <div>
+              <label className="block text-sm font-medium text-text mb-1.5">Full name</label>
+              <input
+                type="text"
+                name="name"
+                required
+                spellCheck={false}
+                autoComplete="name"
+                className="input-field"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="Jane Doe"
+              />
             </div>
-          </div>
 
-          <button type="submit" disabled={submitting} className="btn-primary mt-2">
-            {submitting ? "Creating account..." : "Create account"}
-          </button>
-        </form>
+            <div>
+              <label className="block text-sm font-medium text-text mb-1.5">Email</label>
+              <input
+                type="email"
+                name="email"
+                required
+                spellCheck={false}
+                autoComplete="email"
+                className="input-field"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
+              />
+            </div>
 
-        <p className="text-sm text-slate-light mt-6 text-center">
-          Already have an account?{" "}
-          <Link href="/login" className="text-ink font-medium underline">
-            Log in
-          </Link>
-        </p>
+            <div>
+              <label className="block text-sm font-medium text-text mb-1.5">Password</label>
+              <input
+                type="password"
+                name="password"
+                required
+                minLength={6}
+                autoComplete="new-password"
+                className="input-field"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="At least 6 characters"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-text mb-2">I am joining as a...</label>
+              <div className="grid grid-cols-2 gap-3">
+                {["student", "instructor"].map((r) => (
+                  <button
+                    type="button"
+                    key={r}
+                    onClick={() => setForm({ ...form, role: r })}
+                    className={`rounded-md border px-4 py-2.5 text-sm font-medium capitalize transition ${
+                      form.role === r
+                        ? "border-transparent text-white"
+                        : "border-border text-text-muted hover:border-purple/50"
+                    }`}
+                    style={
+                      form.role === r
+                        ? { backgroundImage: "linear-gradient(135deg, #6366F1, #A855F7, #EC4899)" }
+                        : {}
+                    }
+                  >
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button type="submit" disabled={submitting} className="btn-primary mt-2 w-full">
+              {submitting ? "Creating account..." : "Create account"}
+            </button>
+          </form>
+
+          <p className="text-sm text-text-muted mt-6 text-center">
+            Already have an account?{" "}
+            <Link href="/login" className="text-pink font-medium hover:underline">
+              Log in
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
