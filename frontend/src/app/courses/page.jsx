@@ -3,18 +3,10 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import api from "@/lib/axios";
+import { CATEGORIES, LEVELS } from "@/lib/constants";
 import CourseCard from "@/components/CourseCard";
 import LoadingSpinner from "@/components/LoadingSpinner";
-
-const CATEGORIES = [
-  "Digital Marketing",
-  "Web Development",
-  "Art & Humanities",
-  "Personal Development",
-  "IT and Software",
-  "Graphic Design",
-];
-const LEVELS = ["beginner", "intermediate", "advanced"];
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 function CoursesContent() {
   const searchParams = useSearchParams();
@@ -69,8 +61,13 @@ function CoursesContent() {
 
   const hasActiveFilters = search || category || level;
 
+  const breadcrumbItems = category
+    ? [{ label: "Courses", href: "/courses" }, { label: category }]
+    : [{ label: "Courses" }];
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
+      <Breadcrumbs items={breadcrumbItems} />
       <h1 className="text-3xl mb-2">Browse courses</h1>
       <p className="text-text-muted mb-8">Find your next skill. Filter by category or level.</p>
 

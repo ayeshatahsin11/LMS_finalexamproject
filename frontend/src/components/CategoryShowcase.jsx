@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Megaphone, Code2, Palette, TrendingUp, Cpu, Brush } from "lucide-react";
 import api from "@/lib/axios";
+import { CATEGORIES } from "@/lib/constants";
 
 const CATEGORY_META = {
   "Digital Marketing": { icon: Megaphone, color: "#EC4899" },
@@ -13,8 +14,6 @@ const CATEGORY_META = {
   "IT and Software": { icon: Cpu, color: "#34D399" },
   "Graphic Design": { icon: Palette, color: "#F472B6" },
 };
-
-const CATEGORIES = Object.keys(CATEGORY_META);
 
 export default function CategoryShowcase() {
   const [counts, setCounts] = useState({});

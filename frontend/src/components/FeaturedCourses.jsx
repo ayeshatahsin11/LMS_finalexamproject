@@ -23,7 +23,7 @@ export default function FeaturedCourses() {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl">Popular courses</h2>
         <Link href="/courses" className="text-sm text-purple hover:text-pink transition">
-          View all →
+          View all courses→
         </Link>
       </div>
 
