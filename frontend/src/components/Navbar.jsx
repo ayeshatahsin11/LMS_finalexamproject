@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -7,10 +8,16 @@ import { useAuth } from "@/context/AuthContext";
 export default function Navbar() {
   const { user, logout, loading } = useAuth();
   const router = useRouter();
+  const [search, setSearch] = useState("");
 
   const handleLogout = () => {
     logout();
     router.push("/login");
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    router.push(search.trim() ? `/courses?search=${encodeURIComponent(search.trim())}` : "/courses");
   };
 
   const dashboardPath =
@@ -18,25 +25,50 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur-md">
-      <nav className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
-        <Link href="/" className="font-serif text-xl gradient-text tracking-tight">
+      <nav className="max-w-6xl mx-auto flex items-center gap-6 px-6 py-4">
+        <Link href="/" className="font-serif text-xl gradient-text tracking-tight shrink-0">
           Pathway
         </Link>
 
-        <div className="flex items-center gap-6 text-sm">
-          <Link href="/courses" className="text-text-muted hover:text-text transition">
-            Browse courses
-          </Link>
+        <Link href="/courses" className="text-sm text-text-muted hover:text-text transition shrink-0 hidden md:inline">
+          Courses
+        </Link>
+        <Link href="/courses?category=Web Development" className="text-sm text-text-muted hover:text-text transition shrink-0 hidden lg:inline">
+          Web Dev
+        </Link>
+        <Link href="/courses?category=Graphic Design" className="text-sm text-text-muted hover:text-text transition shrink-0 hidden lg:inline">
+          Design
+        </Link>
 
+        {/* Search - grows to fill available space */}
+        <form onSubmit={handleSearch} className="flex-1 max-w-md hidden sm:block">
+          <div className="relative">
+            <svg
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-faint"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+            </svg>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search courses..."
+              className="input-field !pl-9 !py-2 text-sm"
+            />
+          </div>
+        </form>
+
+        <div className="flex items-center gap-5 text-sm ml-auto shrink-0">
           {loading ? null : user ? (
             <>
-              <Link href={dashboardPath} className="text-text-muted hover:text-text transition">
+              <Link href={dashboardPath} className="text-text-muted hover:text-text transition hidden md:inline">
                 Dashboard
               </Link>
-              <Link href="/profile" className="text-text-muted hover:text-text transition">
+              <Link href="/profile" className="text-text-muted hover:text-text transition hidden md:inline">
                 Profile
               </Link>
-              <span className="hidden sm:inline text-text-faint">
+              <span className="hidden lg:inline text-text-faint">
                 Hi, {user.name?.split(" ")[0]}
               </span>
               <button onClick={handleLogout} className="btn-outline">

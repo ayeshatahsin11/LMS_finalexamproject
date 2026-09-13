@@ -1,3 +1,5 @@
+//  ============= main home page ==================== //
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -5,6 +7,8 @@ import Link from "next/link";
 import api from "@/lib/axios";
 import CourseCard from "@/components/CourseCard";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import CategoryShowcase from "@/components/CategoryShowcase";
+import HowItWorks from "@/components/HowItWorks";
 
 export default function HomePage() {
   const [courses, setCourses] = useState([]);
@@ -76,6 +80,9 @@ export default function HomePage() {
           </div>
         )}
       </section>
+
+      <HowItWorks />
+      <CategoryShowcase />
     </div>
   );
 }
