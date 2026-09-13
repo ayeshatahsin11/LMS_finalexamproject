@@ -28,9 +28,14 @@ export default function InstructorDashboardContent() {
   const published = courses.filter((c) => c.isPublished).length;
   const totalEnrollments = courses.reduce((sum, c) => sum + (c.enrollmentCount || 0), 0);
 
+  const breadcrumbItems =
+    user?.role === "admin"
+      ? [{ label: "Admin", href: "/admin" }, { label: "Instructor" }]
+      : [{ label: "Instructor" }];
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
-      <Breadcrumbs items={[{ label: "Instructor" }]} />
+      <Breadcrumbs items={breadcrumbItems} />
       <div className="flex items-center justify-between mb-1">
         <h1 className="text-3xl">Welcome back, {user?.name?.split(" ")[0]}</h1>
         <Link href="/instructor/courses/new" className="btn-primary">

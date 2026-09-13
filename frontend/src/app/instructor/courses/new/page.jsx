@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import RequireAuth from "@/components/RequireAuth";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -10,6 +11,7 @@ import { CATEGORIES, LEVELS } from "@/lib/constants";
 
 function NewCourseForm() {
   const router = useRouter();
+  const { user } = useAuth();
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -36,9 +38,14 @@ function NewCourseForm() {
     }
   };
 
+  const breadcrumbItems =
+    user?.role === "admin"
+      ? [{ label: "Admin", href: "/admin" }, { label: "Instructor", href: "/instructor" }, { label: "New course" }]
+      : [{ label: "Instructor", href: "/instructor" }, { label: "New course" }];
+
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">
-      <Breadcrumbs items={[{ label: "Instructor", href: "/instructor" }, { label: "New course" }]} />
+      <Breadcrumbs items={breadcrumbItems} />
 
       <h1 className="text-3xl mb-1">Create a new course</h1>
       <p className="text-text-muted mb-8">

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Eye, EyeOff, Trash2 } from "lucide-react";
 import api from "@/lib/axios";
+import { useAuth } from "@/context/AuthContext";
 import { CATEGORIES, LEVELS } from "@/lib/constants";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -15,6 +16,7 @@ import EnrolledStudents from "@/components/EnrolledStudents";
 export default function ManageCourseContent() {
   const { id } = useParams();
   const router = useRouter();
+  const { user } = useAuth();
 
   const [course, setCourse] = useState(null);
   const [lessons, setLessons] = useState([]);
@@ -101,9 +103,14 @@ export default function ManageCourseContent() {
   }
   if (!course) return null;
 
+  const breadcrumbItems =
+    user?.role === "admin"
+      ? [{ label: "Admin", href: "/admin" }, { label: "Instructor", href: "/instructor" }, { label: course.title }]
+      : [{ label: "Instructor", href: "/instructor" }, { label: course.title }];
+
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
-      <Breadcrumbs items={[{ label: "Instructor", href: "/instructor" }, { label: course.title }]} />
+      <Breadcrumbs items={breadcrumbItems} />
 
       <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
         <h1 className="text-3xl">{course.title}</h1>

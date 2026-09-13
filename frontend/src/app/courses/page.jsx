@@ -17,6 +17,18 @@ function CoursesContent() {
   const [level, setLevel] = useState(searchParams.get("level") || "");
   const [page, setPage] = useState(1);
 
+  // Next.js keeps this component mounted when navigating between two URLs
+  // of the SAME route (e.g. /courses -> /courses?category=X via a Link),
+  // so the useState above only runs once and won't pick up a later URL
+  // change on its own. This keeps the filter UI (and results) in sync
+  // whenever the URL's query params change from any source - the
+  // breadcrumb, the navbar search, a category card, etc.
+  useEffect(() => {
+    setSearch(searchParams.get("search") || "");
+    setCategory(searchParams.get("category") || "");
+    setLevel(searchParams.get("level") || "");
+  }, [searchParams]);
+
   const [courses, setCourses] = useState([]);
   const [pagination, setPagination] = useState({ total: 0, pages: 1 });
   const [loading, setLoading] = useState(true);
