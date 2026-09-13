@@ -136,6 +136,14 @@ const getLessonById = async (req, res) => {
     }
 
     const course = lesson.course;
+
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "The course this lesson belongs to no longer exists",
+      });
+    }
+
     const isOwner = req.user && course.instructor.toString() === req.user.userId;
     const isAdmin = req.user && req.user.role === "admin";
 
@@ -188,6 +196,13 @@ const updateLesson = async (req, res) => {
 
     const course = await Course.findById(lesson.course);
 
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "The course this lesson belongs to no longer exists",
+      });
+    }
+
     if (!canModifyCourse(course, req.user)) {
       return res.status(403).json({
         success: false,
@@ -230,6 +245,17 @@ const deleteLesson = async (req, res) => {
     }
 
     const course = await Course.findById(lesson.course);
+
+    if (!course) {
+      // The parent course is gone but this lesson is orphaned - allow
+      // deletion anyway (only admin/instructor reaches this route), since
+      // there's no owner left to check permission against.
+      await lesson.deleteOne();
+      return res.status(200).json({
+        success: true,
+        message: "Orphaned lesson deleted successfully",
+      });
+    }
 
     if (!canModifyCourse(course, req.user)) {
       return res.status(403).json({
