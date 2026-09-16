@@ -12,6 +12,7 @@ import ErrorMessage from "@/components/ErrorMessage";
 import SuccessMessage from "@/components/SuccessMessage";
 import LessonManager from "@/components/LessonManager";
 import EnrolledStudents from "@/components/EnrolledStudents";
+import { useAutoDismiss } from "@/lib/useAutoDismiss";
 
 export default function ManageCourseContent() {
   const { id } = useParams();
@@ -26,6 +27,9 @@ export default function ManageCourseContent() {
   const [success, setSuccess] = useState("");
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(null);
+
+  useAutoDismiss(success, setSuccess);
+  useAutoDismiss(error, setError, 6000);
 
   const loadAll = useCallback(async () => {
     try {
