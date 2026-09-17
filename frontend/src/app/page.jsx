@@ -12,12 +12,22 @@ export default function HomePage() {
   return (
     <div>
       <Hero />
-      <AboutPage/>
+
+      <section id="about" className="scroll-mt-24">
+        <AboutPage />
+      </section>
+
       <FeaturedCourses />
       <CategoryShowcase />
       <HowItWorks />
-      <ReviewsPage/>
-      <ContactPage/>
+
+      <section id="reviews" className="scroll-mt-24">
+        <ReviewsPage />
+      </section>
+
+      <section id="contact" className="scroll-mt-24">
+        <ContactPage />
+      </section>
     </div>
   );
 }
