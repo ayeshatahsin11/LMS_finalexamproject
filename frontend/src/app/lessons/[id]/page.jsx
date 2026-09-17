@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Lock, PlayCircle, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import api from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import LoadingScreen from "@/components/LoadingScreen";
 import ErrorMessage from "@/components/ErrorMessage";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
@@ -78,7 +78,7 @@ export default function LessonViewerPage() {
     }
   };
 
-  if (loading) return <LoadingSpinner label="Loading lesson..." />;
+  if (loading) return <LoadingScreen label="Loading lesson" />;
 
   if (error && !lesson) {
     return (

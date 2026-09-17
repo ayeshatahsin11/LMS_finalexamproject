@@ -5,9 +5,10 @@ import Link from "next/link";
 import { Users, GraduationCap, ShieldCheck, Search, Plus, BookOpen } from "lucide-react";
 import api from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorMessage from "@/components/ErrorMessage";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import StatCardSkeleton from "@/components/StatCardSkeleton";
+import RowSkeleton from "@/components/RowSkeleton";
 
 export default function AdminDashboardContent() {
   const { user: currentUser } = useAuth();
@@ -100,35 +101,43 @@ export default function AdminDashboardContent() {
       <ErrorMessage message={error} />
 
       {/* Summary stats */}
-      <div className="grid sm:grid-cols-3 gap-5 mb-10">
-        <div className="card p-5 flex items-center gap-4">
-          <div className="h-11 w-11 rounded-lg bg-indigo/15 flex items-center justify-center">
-            <GraduationCap size={20} className="text-indigo" />
+      {loading ? (
+        <div className="grid sm:grid-cols-3 gap-5 mb-10">
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-3 gap-5 mb-10">
+          <div className="card p-5 flex items-center gap-4">
+            <div className="h-11 w-11 rounded-lg bg-indigo/15 flex items-center justify-center">
+              <GraduationCap size={20} className="text-indigo" />
+            </div>
+            <div>
+              <p className="text-2xl font-serif text-text">{counts.student}</p>
+              <p className="text-xs text-text-faint">Students</p>
+            </div>
           </div>
-          <div>
-            <p className="text-2xl font-serif text-text">{counts.student}</p>
-            <p className="text-xs text-text-faint">Students</p>
+          <div className="card p-5 flex items-center gap-4">
+            <div className="h-11 w-11 rounded-lg bg-pink/15 flex items-center justify-center">
+              <Users size={20} className="text-pink" />
+            </div>
+            <div>
+              <p className="text-2xl font-serif text-text">{counts.instructor}</p>
+              <p className="text-xs text-text-faint">Instructors</p>
+            </div>
+          </div>
+          <div className="card p-5 flex items-center gap-4">
+            <div className="h-11 w-11 rounded-lg bg-success/15 flex items-center justify-center">
+              <ShieldCheck size={20} className="text-success" />
+            </div>
+            <div>
+              <p className="text-2xl font-serif text-text">{counts.admin}</p>
+              <p className="text-xs text-text-faint">Admins</p>
+            </div>
           </div>
         </div>
-        <div className="card p-5 flex items-center gap-4">
-          <div className="h-11 w-11 rounded-lg bg-pink/15 flex items-center justify-center">
-            <Users size={20} className="text-pink" />
-          </div>
-          <div>
-            <p className="text-2xl font-serif text-text">{counts.instructor}</p>
-            <p className="text-xs text-text-faint">Instructors</p>
-          </div>
-        </div>
-        <div className="card p-5 flex items-center gap-4">
-          <div className="h-11 w-11 rounded-lg bg-success/15 flex items-center justify-center">
-            <ShieldCheck size={20} className="text-success" />
-          </div>
-          <div>
-            <p className="text-2xl font-serif text-text">{counts.admin}</p>
-            <p className="text-xs text-text-faint">Admins</p>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Filters */}
       <div className="card p-4 mb-6 flex flex-col sm:flex-row gap-3">
@@ -151,7 +160,13 @@ export default function AdminDashboardContent() {
       </div>
 
       {loading ? (
-        <LoadingSpinner label="Loading users..." />
+        <div className="card divide-y divide-border overflow-hidden">
+          <RowSkeleton />
+          <RowSkeleton />
+          <RowSkeleton />
+          <RowSkeleton />
+          <RowSkeleton />
+        </div>
       ) : (
         <div className="card divide-y divide-border overflow-hidden">
           {users.length === 0 ? (

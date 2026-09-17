@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Lock, PlayCircle, CheckCircle2, Clock } from "lucide-react";
 import api from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import LoadingScreen from "@/components/LoadingScreen";
 import ErrorMessage from "@/components/ErrorMessage";
 import ProgressBar from "@/components/ProgressBar";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -77,7 +77,7 @@ export default function CourseDetailsPage() {
   const isLessonDone = (lessonId) =>
     enrollment?.completedLessons?.some((l) => (l._id || l) === lessonId);
 
-  if (loading) return <LoadingSpinner label="Loading course..." />;
+  if (loading) return <LoadingScreen label="Loading course" />;
   if (error && !course) {
     return (
       <div className="max-w-3xl mx-auto px-6 py-16">

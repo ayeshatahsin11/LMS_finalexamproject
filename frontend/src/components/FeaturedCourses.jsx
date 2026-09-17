@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import api from "@/lib/axios";
 import CourseCard from "@/components/CourseCard";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import CourseGridSkeleton from "@/components/CourseGridSkeleton";
 
 export default function FeaturedCourses() {
   const [courses, setCourses] = useState([]);
@@ -23,12 +23,12 @@ export default function FeaturedCourses() {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl">Popular courses</h2>
         <Link href="/courses" className="text-sm text-purple hover:text-pink transition">
-          View all courses→
+          View all →
         </Link>
       </div>
 
       {loading ? (
-        <LoadingSpinner label="Loading courses..." />
+        <CourseGridSkeleton count={3} />
       ) : courses.length === 0 ? (
         <p className="text-text-muted">No published courses yet. Check back soon.</p>
       ) : (

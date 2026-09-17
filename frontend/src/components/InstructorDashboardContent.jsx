@@ -5,9 +5,10 @@ import Link from "next/link";
 import { BookOpen, Users, Eye, EyeOff, Plus } from "lucide-react";
 import api from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorMessage from "@/components/ErrorMessage";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import StatCardSkeleton from "@/components/StatCardSkeleton";
+import RowSkeleton from "@/components/RowSkeleton";
 
 export default function InstructorDashboardContent() {
   const { user } = useAuth();
@@ -22,8 +23,6 @@ export default function InstructorDashboardContent() {
       .catch((err) => setError(err.response?.data?.message || "Could not load your courses."))
       .finally(() => setLoading(false));
   }, []);
-
-  if (loading) return <LoadingSpinner label="Loading your courses..." />;
 
   const published = courses.filter((c) => c.isPublished).length;
   const totalEnrollments = courses.reduce((sum, c) => sum + (c.enrollmentCount || 0), 0);
@@ -47,40 +46,54 @@ export default function InstructorDashboardContent() {
       <ErrorMessage message={error} />
 
       {/* Summary stats */}
-      <div className="grid sm:grid-cols-3 gap-5 mb-10">
-        <div className="card p-5 flex items-center gap-4">
-          <div className="h-11 w-11 rounded-lg bg-indigo/15 flex items-center justify-center">
-            <BookOpen size={20} className="text-indigo" />
+      {loading ? (
+        <div className="grid sm:grid-cols-3 gap-5 mb-10">
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-3 gap-5 mb-10">
+          <div className="card p-5 flex items-center gap-4">
+            <div className="h-11 w-11 rounded-lg bg-indigo/15 flex items-center justify-center">
+              <BookOpen size={20} className="text-indigo" />
+            </div>
+            <div>
+              <p className="text-2xl font-serif text-text">{courses.length}</p>
+              <p className="text-xs text-text-faint">Total courses</p>
+            </div>
           </div>
-          <div>
-            <p className="text-2xl font-serif text-text">{courses.length}</p>
-            <p className="text-xs text-text-faint">Total courses</p>
+          <div className="card p-5 flex items-center gap-4">
+            <div className="h-11 w-11 rounded-lg bg-success/15 flex items-center justify-center">
+              <Eye size={20} className="text-success" />
+            </div>
+            <div>
+              <p className="text-2xl font-serif text-text">{published}</p>
+              <p className="text-xs text-text-faint">Published</p>
+            </div>
+          </div>
+          <div className="card p-5 flex items-center gap-4">
+            <div className="h-11 w-11 rounded-lg bg-pink/15 flex items-center justify-center">
+              <Users size={20} className="text-pink" />
+            </div>
+            <div>
+              <p className="text-2xl font-serif text-text">{totalEnrollments}</p>
+              <p className="text-xs text-text-faint">Total enrollments</p>
+            </div>
           </div>
         </div>
-        <div className="card p-5 flex items-center gap-4">
-          <div className="h-11 w-11 rounded-lg bg-success/15 flex items-center justify-center">
-            <Eye size={20} className="text-success" />
-          </div>
-          <div>
-            <p className="text-2xl font-serif text-text">{published}</p>
-            <p className="text-xs text-text-faint">Published</p>
-          </div>
-        </div>
-        <div className="card p-5 flex items-center gap-4">
-          <div className="h-11 w-11 rounded-lg bg-pink/15 flex items-center justify-center">
-            <Users size={20} className="text-pink" />
-          </div>
-          <div>
-            <p className="text-2xl font-serif text-text">{totalEnrollments}</p>
-            <p className="text-xs text-text-faint">Total enrollments</p>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Course list */}
       <h2 className="text-2xl mb-5">Your courses</h2>
 
-      {courses.length === 0 ? (
+      {loading ? (
+        <div className="card divide-y divide-border overflow-hidden">
+          <RowSkeleton />
+          <RowSkeleton />
+          <RowSkeleton />
+        </div>
+      ) : courses.length === 0 ? (
         <div className="card p-10 text-center">
           <p className="text-text-muted mb-4">You haven't created any course yet.</p>
           <Link href="/instructor/courses/new" className="btn-primary">

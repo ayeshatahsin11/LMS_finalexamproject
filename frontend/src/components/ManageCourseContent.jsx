@@ -7,7 +7,7 @@ import api from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
 import { CATEGORIES, LEVELS } from "@/lib/constants";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import LoadingScreen from "@/components/LoadingScreen";
 import ErrorMessage from "@/components/ErrorMessage";
 import SuccessMessage from "@/components/SuccessMessage";
 import LessonManager from "@/components/LessonManager";
@@ -97,7 +97,7 @@ export default function ManageCourseContent() {
     }
   };
 
-  if (loading) return <LoadingSpinner label="Loading course..." />;
+  if (loading) return <LoadingScreen label="Loading course" />;
   if (error && !course) {
     return (
       <div className="max-w-2xl mx-auto px-6 py-16">

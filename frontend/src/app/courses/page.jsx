@@ -5,8 +5,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import { CATEGORIES, LEVELS } from "@/lib/constants";
 import CourseCard from "@/components/CourseCard";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import CourseGridSkeleton from "@/components/CourseGridSkeleton";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 function CoursesContent() {
   const searchParams = useSearchParams();
@@ -131,7 +132,7 @@ function CoursesContent() {
       </div>
 
       {loading ? (
-        <LoadingSpinner label="Finding courses..." />
+        <CourseGridSkeleton count={9} />
       ) : courses.length === 0 ? (
         <div className="text-center py-20 text-text-muted">
           No courses match your filters. Try broadening your search.

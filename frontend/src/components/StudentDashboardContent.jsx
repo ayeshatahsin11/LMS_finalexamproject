@@ -5,10 +5,11 @@ import Link from "next/link";
 import { BookOpen, CheckCircle2, Flame } from "lucide-react";
 import api from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorMessage from "@/components/ErrorMessage";
 import ProgressBar from "@/components/ProgressBar";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import StatCardSkeleton from "@/components/StatCardSkeleton";
+import CourseGridSkeleton from "@/components/CourseGridSkeleton";
 
 export default function StudentDashboardContent() {
   const { user } = useAuth();
@@ -23,8 +24,6 @@ export default function StudentDashboardContent() {
       .catch((err) => setError(err.response?.data?.message || "Could not load your dashboard."))
       .finally(() => setLoading(false));
   }, []);
-
-  if (loading) return <LoadingSpinner label="Loading your dashboard..." />;
 
   const totalCourses = enrollments.length;
   const completedCourses = enrollments.filter((e) => e.status === "completed").length;
@@ -41,40 +40,50 @@ export default function StudentDashboardContent() {
       <ErrorMessage message={error} />
 
       {/* Summary stats */}
-      <div className="grid sm:grid-cols-3 gap-5 mb-10">
-        <div className="card p-5 flex items-center gap-4">
-          <div className="h-11 w-11 rounded-lg bg-indigo/15 flex items-center justify-center">
-            <BookOpen size={20} className="text-indigo" />
+      {loading ? (
+        <div className="grid sm:grid-cols-3 gap-5 mb-10">
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-3 gap-5 mb-10">
+          <div className="card p-5 flex items-center gap-4">
+            <div className="h-11 w-11 rounded-lg bg-indigo/15 flex items-center justify-center">
+              <BookOpen size={20} className="text-indigo" />
+            </div>
+            <div>
+              <p className="text-2xl font-serif text-text">{totalCourses}</p>
+              <p className="text-xs text-text-faint">Enrolled courses</p>
+            </div>
           </div>
-          <div>
-            <p className="text-2xl font-serif text-text">{totalCourses}</p>
-            <p className="text-xs text-text-faint">Enrolled courses</p>
+          <div className="card p-5 flex items-center gap-4">
+            <div className="h-11 w-11 rounded-lg bg-success/15 flex items-center justify-center">
+              <CheckCircle2 size={20} className="text-success" />
+            </div>
+            <div>
+              <p className="text-2xl font-serif text-text">{completedCourses}</p>
+              <p className="text-xs text-text-faint">Completed</p>
+            </div>
+          </div>
+          <div className="card p-5 flex items-center gap-4">
+            <div className="h-11 w-11 rounded-lg bg-pink/15 flex items-center justify-center">
+              <Flame size={20} className="text-pink" />
+            </div>
+            <div>
+              <p className="text-2xl font-serif text-text">{avgProgress}%</p>
+              <p className="text-xs text-text-faint">Average progress</p>
+            </div>
           </div>
         </div>
-        <div className="card p-5 flex items-center gap-4">
-          <div className="h-11 w-11 rounded-lg bg-success/15 flex items-center justify-center">
-            <CheckCircle2 size={20} className="text-success" />
-          </div>
-          <div>
-            <p className="text-2xl font-serif text-text">{completedCourses}</p>
-            <p className="text-xs text-text-faint">Completed</p>
-          </div>
-        </div>
-        <div className="card p-5 flex items-center gap-4">
-          <div className="h-11 w-11 rounded-lg bg-pink/15 flex items-center justify-center">
-            <Flame size={20} className="text-pink" />
-          </div>
-          <div>
-            <p className="text-2xl font-serif text-text">{avgProgress}%</p>
-            <p className="text-xs text-text-faint">Average progress</p>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Enrolled courses */}
       <h2 className="text-2xl mb-5">Your courses</h2>
 
-      {enrollments.length === 0 ? (
+      {loading ? (
+        <CourseGridSkeleton count={3} />
+      ) : enrollments.length === 0 ? (
         <div className="card p-10 text-center">
           <p className="text-text-muted mb-4">You haven't enrolled in any course yet.</p>
           <Link href="/courses" className="btn-primary">
