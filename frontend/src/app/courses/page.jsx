@@ -82,16 +82,25 @@ function CoursesContent() {
     <div className="max-w-6xl mx-auto px-6 py-12">
       <Breadcrumbs items={breadcrumbItems} />
       <h1 className="text-3xl mb-2">Browse courses</h1>
-      <p className="text-text-muted mb-8">Find your next skill. Filter by category or level.</p>
+      <p className="text-text-muted mb-8">
+        Find your next skill. Filter by category or level.
+      </p>
 
       {/* Top horizontal filter bar */}
       <div className="card p-4 mb-8 flex flex-col md:flex-row gap-3">
         <form onSubmit={handleSearchSubmit} className="flex-1 relative">
           <svg
             className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-faint"
-            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"
+            />
           </svg>
           <input
             type="text"
@@ -109,7 +118,9 @@ function CoursesContent() {
         >
           <option value="">All categories</option>
           {CATEGORIES.map((c) => (
-            <option key={c} value={c}>{c}</option>
+            <option key={c} value={c}>
+              {c}
+            </option>
           ))}
         </select>
 
@@ -120,12 +131,18 @@ function CoursesContent() {
         >
           <option value="">All levels</option>
           {LEVELS.map((l) => (
-            <option key={l} value={l} className="capitalize">{l}</option>
+            <option key={l} value={l} className="capitalize">
+              {l}
+            </option>
           ))}
         </select>
 
         {hasActiveFilters && (
-          <button onClick={clearFilters} type="button" className="btn-outline shrink-0">
+          <button
+            onClick={clearFilters}
+            type="button"
+            className="btn-outline shrink-0"
+          >
             Clear
           </button>
         )}
@@ -139,7 +156,9 @@ function CoursesContent() {
         </div>
       ) : (
         <>
-          <p className="text-sm text-text-faint mb-4">{pagination.total} course{pagination.total !== 1 ? "s" : ""} found</p>
+          <p className="text-sm text-text-faint mb-4">
+            {pagination.total} course{pagination.total !== 1 ? "s" : ""} found
+          </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {courses.map((course) => (
               <CourseCard key={course._id} course={course} />
@@ -148,20 +167,29 @@ function CoursesContent() {
 
           {pagination.pages > 1 && (
             <div className="flex items-center justify-center gap-2 mt-10">
-              {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setPage(p)}
-                  className={`h-9 w-9 rounded-md text-sm transition ${
-                    p === page
-                      ? "text-white"
-                      : "text-text-muted border border-border hover:border-purple/50"
-                  }`}
-                  style={p === page ? { backgroundImage: "linear-gradient(135deg, #6366F1, #A855F7, #EC4899)" } : {}}
-                >
-                  {p}
-                </button>
-              ))}
+              {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(
+                (p) => (
+                  <button
+                    key={p}
+                    onClick={() => setPage(p)}
+                    className={`h-9 w-9 rounded-md text-sm transition ${
+                      p === page
+                        ? "text-white"
+                        : "text-text-muted border border-border hover:border-purple/50"
+                    }`}
+                    style={
+                      p === page
+                        ? {
+                            backgroundImage:
+                              "linear-gradient(135deg, #6366F1, #A855F7, #EC4899)",
+                          }
+                        : {}
+                    }
+                  >
+                    {p}
+                  </button>
+                ),
+              )}
             </div>
           )}
         </>

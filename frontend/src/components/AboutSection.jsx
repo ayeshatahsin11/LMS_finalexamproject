@@ -1,6 +1,5 @@
 import { Target, Heart, Users, Zap } from "lucide-react";
 
-
 const VALUES = [
   {
     icon: Target,
@@ -24,11 +23,9 @@ const VALUES = [
   },
 ];
 
-export default function AboutPage() {
+export default function AboutSection() {
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
-    
-
       <div className="mb-14 max-w-2xl">
         <span className="inline-block text-xs font-medium tracking-wide uppercase text-pink px-3 py-1 rounded-full border border-pink/30 bg-pink/5 mb-4">
           Our story
@@ -43,7 +40,6 @@ export default function AboutPage() {
         </p>
       </div>
 
-      {/* Values grid */}
       <div className="grid sm:grid-cols-2 gap-6 mb-16">
         {VALUES.map((v, i) => {
           const Icon = v.icon;
@@ -59,7 +55,6 @@ export default function AboutPage() {
         })}
       </div>
 
-      {/* Stats strip */}
       <div className="card p-8 grid grid-cols-2 sm:grid-cols-3 gap-8 text-center mb-16">
         <div>
           <p className="text-3xl font-serif gradient-text">6+</p>
@@ -75,7 +70,6 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* Closing note */}
       <div className="text-center max-w-lg mx-auto">
         <h2 className="text-2xl mb-3">Built by learners, for learners</h2>
         <p className="text-text-muted text-sm">
@@ -87,5 +81,3 @@ export default function AboutPage() {
     </div>
   );
 }
-
-
