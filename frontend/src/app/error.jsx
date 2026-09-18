@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import { RotateCcw } from "lucide-react";
+import Modal from "@/components/Modal";
 
 export default function ErrorPage({ error, reset }) {
+  const [showModal, setShowModal] = useState(false);
+
   useEffect(() => {
     // In a real production app this is where you'd send the error to a
     // logging service (Sentry, LogRocket, etc). Logging to console here
@@ -24,19 +26,30 @@ export default function ErrorPage({ error, reset }) {
 
         <h1 className="text-2xl mb-3">Something went wrong.</h1>
         <p className="text-text-muted mb-8">
-          An unexpected error interrupted this page. It's not you - try again, and if it
-          keeps happening, head back home.
+          An unexpected error interrupted this page. It's not you - try again,
+          and if it keeps happening, head back home.
         </p>
 
         <div className="flex items-center justify-center gap-4 flex-wrap">
           <button onClick={() => reset()} className="btn-primary">
             <RotateCcw size={16} className="mr-1.5" /> Try again
           </button>
-          <Link href="/" className="btn-outline">
+          <button onClick={() => setShowModal(true)} className="btn-outline">
             Back to home
-          </Link>
+          </button>
         </div>
       </div>
+
+      <Modal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        variant="warning"
+        title="We're on it"
+        message="We're experiencing unexpected issues on our end. Our team is already working on a fix - please wait a moment and try again later."
+        actionLabel="Okay, got it"
+        onAction={() => setShowModal(false)}
+      />
     </div>
   );
 }
+
