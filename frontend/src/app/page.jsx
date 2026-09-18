@@ -4,9 +4,9 @@ import Hero from "@/components/Hero";
 import FeaturedCourses from "@/components/FeaturedCourses";
 import HowItWorks from "@/components/HowItWorks";
 import CategoryShowcase from "@/components/CategoryShowcase";
-import AboutPage from "./about/page";
-import ReviewsPage from "./reviews/page";
-import ContactPage from "./contact/page";
+import AboutSection from "@/components/AboutSection";
+import ReviewsSection from "@/components/ReviewsSection";
+import ContactSection from "@/components/ContactSection";
 
 export default function HomePage() {
   return (
@@ -14,7 +14,7 @@ export default function HomePage() {
       <Hero />
 
       <section id="about" className="scroll-mt-24">
-        <AboutPage />
+        <AboutSection />
       </section>
 
       <FeaturedCourses />
@@ -22,14 +22,12 @@ export default function HomePage() {
       <HowItWorks />
 
       <section id="reviews" className="scroll-mt-24">
-        <ReviewsPage />
+        <ReviewsSection />
       </section>
 
       <section id="contact" className="scroll-mt-24">
-        <ContactPage />
+        <ContactSection />
       </section>
     </div>
   );
 }
-
-
