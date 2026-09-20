@@ -27,9 +27,9 @@ export default function Navbar() {
   // logged in - different per role.
   const roleLink =
     user?.role === "admin"
-      ? { label: "Manage Users", href: "/admin" }
+      ? { label: "Manage Users", href: "/admin/users" }
       : user?.role === "instructor"
-      ? { label: "My Courses", href: "/instructor" }
+      ? { label: "My Courses", href: "/instructor/my-courses" }
       : user?.role === "student"
       ? { label: "My Lessons", href: "/my-lessons" }
       : null;

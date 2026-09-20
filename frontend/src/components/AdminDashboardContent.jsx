@@ -1,102 +1,38 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Users, GraduationCap, ShieldCheck, Search, Plus, BookOpen } from "lucide-react";
+import { Users, GraduationCap, ShieldCheck, ArrowRight, Plus, BookOpen } from "lucide-react";
 import api from "@/lib/axios";
-import { useAuth } from "@/context/AuthContext";
-import ErrorMessage from "@/components/ErrorMessage";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import ErrorMessage from "@/components/ErrorMessage";
 import StatCardSkeleton from "@/components/StatCardSkeleton";
-import RowSkeleton from "@/components/RowSkeleton";
 
 export default function AdminDashboardContent() {
-  const { user: currentUser } = useAuth();
-  const [users, setUsers] = useState([]);
-  const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("");
+  const [counts, setCounts] = useState({ student: 0, instructor: 0, admin: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [busyId, setBusyId] = useState(null);
-
-  const loadUsers = useCallback(() => {
-    setLoading(true);
-    const params = { limit: 100 };
-    if (search) params.search = search;
-    if (roleFilter) params.role = roleFilter;
-
-    api
-      .get("/users", { params })
-      .then((res) => setUsers(res.data.users))
-      .catch((err) => setError(err.response?.data?.message || "Could not load users."))
-      .finally(() => setLoading(false));
-  }, [search, roleFilter]);
 
   useEffect(() => {
-    loadUsers();
-  }, [loadUsers]);
-
-  const handleRoleChange = async (id, role) => {
-    setBusyId(id);
-    setError("");
-    try {
-      await api.put(`/users/${id}`, { role });
-      setUsers((prev) => prev.map((u) => (u._id === id ? { ...u, role } : u)));
-    } catch (err) {
-      setError(err.response?.data?.message || "Unable to update role.");
-    } finally {
-      setBusyId(null);
-    }
-  };
-
-  const toggleActive = async (u) => {
-    setBusyId(u._id);
-    setError("");
-    try {
-      await api.put(`/users/${u._id}`, { isActive: !u.isActive });
-      setUsers((prev) => prev.map((x) => (x._id === u._id ? { ...x, isActive: !u.isActive } : x)));
-    } catch (err) {
-      setError(err.response?.data?.message || "Unable to update status.");
-    } finally {
-      setBusyId(null);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (!confirm("Permanently delete this user? This cannot be undone.")) return;
-    setBusyId(id);
-    setError("");
-    try {
-      await api.delete(`/users/${id}`);
-      setUsers((prev) => prev.filter((u) => u._id !== id));
-    } catch (err) {
-      setError(err.response?.data?.message || "Unable to delete user.");
-    } finally {
-      setBusyId(null);
-    }
-  };
-
-  const counts = {
-    student: users.filter((u) => u.role === "student").length,
-    instructor: users.filter((u) => u.role === "instructor").length,
-    admin: users.filter((u) => u.role === "admin").length,
-  };
+    api
+      .get("/users", { params: { limit: 200 } })
+      .then((res) => {
+        const users = res.data.users;
+        setCounts({
+          student: users.filter((u) => u.role === "student").length,
+          instructor: users.filter((u) => u.role === "instructor").length,
+          admin: users.filter((u) => u.role === "admin").length,
+        });
+      })
+      .catch((err) => setError(err.response?.data?.message || "Could not load stats."))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
       <Breadcrumbs items={[{ label: "Admin" }]} />
-      <div className="flex items-center justify-between mb-1 flex-wrap gap-3">
-        <h1 className="text-3xl">Admin dashboard</h1>
-        <div className="flex items-center gap-3">
-          <Link href="/instructor" className="btn-outline">
-            <BookOpen size={16} className="mr-1" /> My courses
-          </Link>
-          <Link href="/instructor/courses/new" className="btn-primary">
-            <Plus size={16} className="mr-1" /> Create course
-          </Link>
-        </div>
-      </div>
-      <p className="text-text-muted mb-8">Manage every account on the platform.</p>
+      <h1 className="text-3xl mb-1">Admin dashboard</h1>
+      <p className="text-text-muted mb-8">A quick overview of the whole platform.</p>
 
       <ErrorMessage message={error} />
 
@@ -139,83 +75,41 @@ export default function AdminDashboardContent() {
         </div>
       )}
 
-      {/* Filters */}
-      <div className="card p-4 mb-6 flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-faint" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name or email..."
-            className="input-field !pl-9"
-          />
-        </div>
-        <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="input-field sm:w-48 capitalize">
-          <option value="">All roles</option>
-          <option value="student">Student</option>
-          <option value="instructor">Instructor</option>
-          <option value="admin">Admin</option>
-        </select>
+      {/* Quick actions */}
+      <div className="grid sm:grid-cols-3 gap-5">
+        <Link href="/admin/users" className="card card-hover p-6 flex flex-col gap-3">
+          <Users size={20} className="text-purple" />
+          <h3 className="font-serif text-lg text-text">Manage users</h3>
+          <p className="text-sm text-text-muted flex-1">
+            Search accounts, change roles, activate/deactivate, and inspect student progress.
+          </p>
+          <span className="text-sm text-purple flex items-center gap-1">
+            Go there <ArrowRight size={14} />
+          </span>
+        </Link>
+
+        <Link href="/instructor/my-courses" className="card card-hover p-6 flex flex-col gap-3">
+          <BookOpen size={20} className="text-indigo" />
+          <h3 className="font-serif text-lg text-text">My courses</h3>
+          <p className="text-sm text-text-muted flex-1">
+            View and manage every course you've created, including lessons.
+          </p>
+          <span className="text-sm text-indigo flex items-center gap-1">
+            Go there <ArrowRight size={14} />
+          </span>
+        </Link>
+
+        <Link href="/instructor/courses/new" className="card card-hover p-6 flex flex-col gap-3">
+          <Plus size={20} className="text-pink" />
+          <h3 className="font-serif text-lg text-text">Create a course</h3>
+          <p className="text-sm text-text-muted flex-1">
+            Start a new course as an admin, just like an instructor would.
+          </p>
+          <span className="text-sm text-pink flex items-center gap-1">
+            Go there <ArrowRight size={14} />
+          </span>
+        </Link>
       </div>
-
-      {loading ? (
-        <div className="card divide-y divide-border overflow-hidden">
-          <RowSkeleton />
-          <RowSkeleton />
-          <RowSkeleton />
-          <RowSkeleton />
-          <RowSkeleton />
-        </div>
-      ) : (
-        <div className="card divide-y divide-border overflow-hidden">
-          {users.length === 0 ? (
-            <p className="p-5 text-text-muted text-sm">No users match your filters.</p>
-          ) : (
-            users.map((u) => {
-              const isSelf = u._id === currentUser?._id;
-              const isBusy = busyId === u._id;
-              return (
-                <div key={u._id} className="flex items-center gap-4 px-5 py-4 flex-wrap">
-                  <div className="flex-1 min-w-[160px]">
-                    <p className="text-sm text-text">{u.name} {isSelf && <span className="text-text-faint">(you)</span>}</p>
-                    <p className="text-xs text-text-faint">{u.email}</p>
-                  </div>
-
-                  <select
-                    value={u.role}
-                    disabled={isSelf || isBusy}
-                    onChange={(e) => handleRoleChange(u._id, e.target.value)}
-                    className="input-field !py-1.5 !w-32 text-xs capitalize disabled:opacity-50"
-                  >
-                    <option value="student">Student</option>
-                    <option value="instructor">Instructor</option>
-                    <option value="admin">Admin</option>
-                  </select>
-
-                  <button
-                    disabled={isSelf || isBusy}
-                    onClick={() => toggleActive(u)}
-                    className={`text-xs font-medium px-2.5 py-1.5 rounded transition disabled:opacity-50 ${
-                      u.isActive ? "bg-success/10 text-success" : "bg-danger/10 text-danger"
-                    }`}
-                  >
-                    {u.isActive ? "Active" : "Deactivated"}
-                  </button>
-
-                  <button
-                    disabled={isSelf || isBusy}
-                    onClick={() => handleDelete(u._id)}
-                    className="text-xs text-text-faint hover:text-danger transition disabled:opacity-50"
-                  >
-                    Delete
-                  </button>
-                </div>
-              );
-            })
-          )}
-        </div>
-      )}
     </div>
   );
 }

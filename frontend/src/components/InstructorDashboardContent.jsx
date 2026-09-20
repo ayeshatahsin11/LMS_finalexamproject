@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { BookOpen, Users, Eye, EyeOff, Plus } from "lucide-react";
+import { BookOpen, Users, Eye, EyeOff, Plus, ListTree } from "lucide-react";
 import api from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -37,9 +37,14 @@ export default function InstructorDashboardContent() {
       <Breadcrumbs items={breadcrumbItems} />
       <div className="flex items-center justify-between mb-1">
         <h1 className="text-3xl">Welcome back, {user?.name?.split(" ")[0]}</h1>
-        <Link href="/instructor/courses/new" className="btn-primary">
-          <Plus size={16} className="mr-1" /> New course
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/instructor/my-courses" className="btn-outline">
+            <ListTree size={16} className="mr-1" /> Manage lessons
+          </Link>
+          <Link href="/instructor/courses/new" className="btn-primary">
+            <Plus size={16} className="mr-1" /> New course
+          </Link>
+        </div>
       </div>
       <p className="text-text-muted mb-8">Manage your courses and see how students are progressing.</p>
 
