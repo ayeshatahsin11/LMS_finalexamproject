@@ -1,3 +1,4 @@
+
 import { Target, Heart, Users, Zap } from "lucide-react";
 
 const VALUES = [
@@ -81,3 +82,5 @@ export default function AboutSection() {
     </div>
   );
 }
+
+

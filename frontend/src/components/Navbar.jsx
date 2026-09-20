@@ -23,6 +23,17 @@ export default function Navbar() {
   const dashboardPath =
     user?.role === "admin" ? "/admin" : user?.role === "instructor" ? "/instructor" : "/dashboard";
 
+  // The single "middle" link that replaces About/Contact once someone is
+  // logged in - different per role.
+  const roleLink =
+    user?.role === "admin"
+      ? { label: "Manage Users", href: "/admin" }
+      : user?.role === "instructor"
+      ? { label: "My Courses", href: "/instructor" }
+      : user?.role === "student"
+      ? { label: "My Lessons", href: "/my-lessons" }
+      : null;
+
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur-md">
       <nav className="max-w-6xl mx-auto flex items-center gap-6 px-6 py-4">
@@ -33,12 +44,23 @@ export default function Navbar() {
         <Link href="/courses" className="text-sm text-text-muted hover:text-text transition shrink-0 hidden md:inline">
           Courses
         </Link>
-        <Link href="/courses?category=Web Development" className="text-sm text-text-muted hover:text-text transition shrink-0 hidden lg:inline">
-          Web Dev
-        </Link>
-        <Link href="/courses?category=Graphic Design" className="text-sm text-text-muted hover:text-text transition shrink-0 hidden lg:inline">
-          Design
-        </Link>
+
+        {loading ? null : user ? (
+          // Logged in: single role-specific link (My Lessons / My Courses / Manage Users)
+          <Link href={roleLink.href} className="text-sm text-text-muted hover:text-text transition shrink-0 hidden lg:inline">
+            {roleLink.label}
+          </Link>
+        ) : (
+          // Guest: About + Contact, scrolling to homepage sections
+          <>
+            <Link href="/#about" className="text-sm text-text-muted hover:text-text transition shrink-0 hidden lg:inline">
+              About
+            </Link>
+            <Link href="/#contact" className="text-sm text-text-muted hover:text-text transition shrink-0 hidden lg:inline">
+              Contact
+            </Link>
+          </>
+        )}
 
         {/* Search - grows to fill available space */}
         <form onSubmit={handleSearch} className="flex-1 max-w-md hidden sm:block">
