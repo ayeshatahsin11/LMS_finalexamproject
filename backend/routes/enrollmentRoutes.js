@@ -4,6 +4,7 @@ const {
   enrollInCourse,
   getMyEnrollments,
   getCourseEnrollments,
+  getUserEnrollments,
   updateProgress,
 } = require("../controllers/enrollmentController");
 
@@ -24,6 +25,14 @@ router.get(
   protect,
   authorizeRoles("instructor", "admin"),
   getCourseEnrollments
+);
+
+// Admin only: see one specific student's enrollments/progress across ALL courses
+router.get(
+  "/user/:userId",
+  protect,
+  authorizeRoles("admin"),
+  getUserEnrollments
 );
 
 // Student marks a lesson as complete (updates progress %)

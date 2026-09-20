@@ -188,9 +188,33 @@ const updateProgress = async (req, res) => {
   }
 };
 
+// Admin: see ALL enrollments (with progress) for one specific student,
+// across every course they've enrolled in. Powers the detailed "Manage
+// Users" admin view.
+const getUserEnrollments = async (req, res) => {
+  try {
+    const enrollments = await Enrollment.find({ student: req.params.userId })
+      .populate("course", "title category level isPublished")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: enrollments.length,
+      enrollments,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   enrollInCourse,
   getMyEnrollments,
   getCourseEnrollments,
+  getUserEnrollments,
   updateProgress,
 };
