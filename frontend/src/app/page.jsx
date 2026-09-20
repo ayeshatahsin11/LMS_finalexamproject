@@ -25,11 +25,11 @@ export default function HomePage() {
       <section id="reviews" className="scroll-mt-24">
         <ReviewsSection />
       </section>
-      <TrustedResources />
 
       <section id="contact" className="scroll-mt-24">
         <ContactSection />
       </section>
+      <TrustedResources />
 
     </div>
   );

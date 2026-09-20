@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Star, Quote } from "lucide-react";
+import ReviewMarqueeColumn from "./ReviewMarqueeColumn";
 
 const STORIES = [
   {
@@ -52,10 +52,16 @@ const STORIES = [
   },
 ];
 
+// Split into 3 columns (2 stories each) - each column scrolls a
+// different direction for a livelier "wall of testimonials" effect.
+const COLUMN_1 = [STORIES[0], STORIES[1]];
+const COLUMN_2 = [STORIES[2], STORIES[3]];
+const COLUMN_3 = [STORIES[4], STORIES[5]];
+
 export default function ReviewsSection() {
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
-      <div className="text-center max-w-xl mx-auto mb-14">
+      <div className="text-center max-w-xl mx-auto mb-10">
         <span className="inline-block text-xs font-medium tracking-wide uppercase text-pink px-3 py-1 rounded-full border border-pink/30 bg-pink/5 mb-4">
           Success stories
         </span>
@@ -68,31 +74,9 @@ export default function ReviewsSection() {
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-        {STORIES.map((s, i) => (
-          <div key={i} className="card p-6 flex flex-col gap-4">
-            <Quote size={22} className="text-purple/50" />
-            <p className="text-sm text-text-muted flex-1">"{s.quote}"</p>
-            <div className="flex gap-0.5">
-              {Array.from({ length: 5 }).map((_, idx) => (
-                <Star
-                  key={idx}
-                  size={14}
-                  className={idx < s.rating ? "text-amber-400 fill-amber-400" : "text-border"}
-                />
-              ))}
-            </div>
-            <div className="flex items-center gap-3 pt-2 border-t border-border">
-              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo via-purple to-pink flex items-center justify-center text-white font-serif text-sm shrink-0">
-                {s.name.charAt(0)}
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm text-text truncate">{s.name}</p>
-                <p className="text-xs text-text-faint truncate">{s.role}</p>
-              </div>
-            </div>
-            <p className="text-xs text-purple">{s.course}</p>
-          </div>
-        ))}
+        <ReviewMarqueeColumn stories={COLUMN_1} reverse={false} />
+        <ReviewMarqueeColumn stories={COLUMN_2} reverse={true} className="hidden sm:block" />
+        <ReviewMarqueeColumn stories={COLUMN_3} reverse={false} className="hidden lg:block" />
       </div>
 
       <div className="card p-10 text-center">
@@ -105,4 +89,3 @@ export default function ReviewsSection() {
     </div>
   );
 }
-

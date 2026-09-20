@@ -223,10 +223,10 @@ h1, h2, h3, h4 {
   to { transform: translateY(-50%); }
 }
 .animate-marquee-vertical {
-  animation: marqueeVertical 24s linear infinite;
+  animation: marqueeVertical 10s linear infinite;
 }
 .animate-marquee-vertical-reverse {
-  animation: marqueeVertical 24s linear infinite reverse;
+  animation: marqueeVertical 10s linear infinite reverse;
 }
 .animate-marquee-vertical:hover,
 .animate-marquee-vertical-reverse:hover {
