@@ -2,7 +2,7 @@ import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import ConditionalFooter from "@/components/ConditionalFooter";
 import ScrollToTop from "@/components/ScrollToTop";
 
 const fraunces = Fraunces({
@@ -29,11 +29,10 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <Navbar />
           <main className="min-h-[calc(100vh-73px)]">{children}</main>
-          <Footer />
+          <ConditionalFooter />
           <ScrollToTop />
         </AuthProvider>
       </body>
     </html>
   );
 }
-
