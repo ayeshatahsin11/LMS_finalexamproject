@@ -243,10 +243,54 @@ const deleteCourse = async (req, res) => {
   }
 };
 
+// Admin only: every course on the platform, regardless of who created
+// it or whether it's published - powers the admin "Manage courses" view.
+const getAllCourses = async (req, res) => {
+  try {
+    const { search, page = 1, limit = 20 } = req.query;
+
+    const query = {};
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const pageNum = Number(page) || 1;
+    const limitNum = Number(limit) || 20;
+
+    const [courses, total] = await Promise.all([
+      Course.find(query)
+        .populate("instructor", "name email")
+        .sort({ createdAt: -1 })
+        .skip((pageNum - 1) * limitNum)
+        .limit(limitNum),
+      Course.countDocuments(query),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      count: courses.length,
+      total,
+      page: pageNum,
+      pages: Math.ceil(total / limitNum),
+      courses,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createCourse,
   getCourses,
   getMyCourses,
+  getAllCourses,
   getCourseById,
   updateCourse,
   deleteCourse,

@@ -4,6 +4,7 @@ const {
   createCourse,
   getCourses,
   getMyCourses,
+  getAllCourses,
   getCourseById,
   updateCourse,
   deleteCourse,
@@ -28,6 +29,15 @@ router.get(
   protect,
   authorizeRoles("instructor", "admin"),
   getMyCourses
+);
+
+// Admin only: every course on the platform (any owner, any publish
+// status) - must come before "/:id" for the same reason as "my-courses".
+router.get(
+  "/all",
+  protect,
+  authorizeRoles("admin"),
+  getAllCourses
 );
 
 // optionalAuth: guests can view published courses; if a logged-in
