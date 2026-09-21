@@ -10,7 +10,7 @@ const canModifyCourse = (course, user) => {
 
 const createCourse = async (req, res) => {
   try {
-    const { title, description, category, level, thumbnail } = req.body;
+    const { title, description, category, level, thumbnail, isFeatured } = req.body;
 
     if (!title || !description || !category) {
       return res.status(400).json({
@@ -25,6 +25,7 @@ const createCourse = async (req, res) => {
       category,
       level,
       thumbnail,
+      isFeatured: !!isFeatured,
       instructor: req.user.userId,
     });
 
@@ -46,7 +47,7 @@ const createCourse = async (req, res) => {
 // category & level filters, and pagination.
 const getCourses = async (req, res) => {
   try {
-    const { search, category, level, page = 1, limit = 12 } = req.query;
+    const { search, category, level, featured, page = 1, limit = 12 } = req.query;
 
     const query = { isPublished: true };
 
@@ -58,6 +59,10 @@ const getCourses = async (req, res) => {
     }
     if (category) query.category = category;
     if (level) query.level = level;
+    // ?featured=true - powers the homepage "Popular courses" carousel,
+    // which should only show courses an instructor explicitly opted in,
+    // not just "the most recent ones".
+    if (featured === "true") query.isFeatured = true;
 
     const pageNum = Number(page) || 1;
     const limitNum = Number(limit) || 12;
@@ -157,7 +162,7 @@ const getCourseById = async (req, res) => {
 
 const updateCourse = async (req, res) => {
   try {
-    const { title, description, category, level, thumbnail, isPublished } = req.body;
+    const { title, description, category, level, thumbnail, isPublished, isFeatured } = req.body;
 
     const course = await Course.findById(req.params.id);
 
@@ -181,6 +186,7 @@ const updateCourse = async (req, res) => {
     course.level = level ?? course.level;
     course.thumbnail = thumbnail ?? course.thumbnail;
     course.isPublished = isPublished ?? course.isPublished;
+    course.isFeatured = isFeatured ?? course.isFeatured;
 
     await course.save();
 

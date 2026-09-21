@@ -30,6 +30,14 @@ const courseSchema = new mongoose.Schema(
       default: "",
     },
 
+    // Controls whether this course shows in the homepage "Popular
+    // courses" carousel. Instructor/admin toggles this explicitly - NOT
+    // every published course should show up there.
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
+
     instructor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
