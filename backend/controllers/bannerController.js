@@ -1,12 +1,11 @@
 const mongoose = require("mongoose");
 const Banner = require("../models/Banner");
 
-// Admin only - every banner ever created, newest first, so the admin can
-// pick a different one to activate later (e.g. swap back after an offer
-// ends) without having to recreate it.
+// Admin only - every banner ever created, in slider order, so the manage
+// screen lists them the same way they'd appear in the homepage rotation.
 const getBanners = async (req, res) => {
   try {
-    const banners = await Banner.find().sort({ createdAt: -1 });
+    const banners = await Banner.find().sort({ order: 1, createdAt: 1 });
 
     res.status(200).json({
       success: true,
@@ -22,17 +21,17 @@ const getBanners = async (req, res) => {
   }
 };
 
-// Public - the single banner the homepage hero should render. Returns
-// `banner: null` (not a 404) when nothing is active yet, since "no
-// custom banner" is an expected state, not an error - the frontend
-// falls back to its default hero content in that case.
-const getActiveBanner = async (req, res) => {
+// Public - every banner currently active, in slider order. Multiple
+// banners can be active at once (the homepage rotates through them);
+// zero is a normal state too (the frontend falls back to its default
+// hero content), so this never 404s.
+const getActiveBanners = async (req, res) => {
   try {
-    const banner = await Banner.findOne({ isActive: true }).sort({ updatedAt: -1 });
+    const banners = await Banner.find({ isActive: true }).sort({ order: 1, createdAt: 1 });
 
     res.status(200).json({
       success: true,
-      banner: banner || null,
+      banners,
     });
   } catch (error) {
     res.status(500).json({
@@ -57,6 +56,7 @@ const createBanner = async (req, res) => {
       secondaryButtonText,
       secondaryButtonLink,
       isActive,
+      order,
     } = req.body;
 
     if (!title) {
@@ -64,12 +64,6 @@ const createBanner = async (req, res) => {
         success: false,
         message: "Banner title is required",
       });
-    }
-
-    // Only one banner is ever shown at once - if this one is being
-    // created as active, deactivate every other banner first.
-    if (isActive) {
-      await Banner.updateMany({}, { isActive: false });
     }
 
     const banner = await Banner.create({
@@ -84,6 +78,7 @@ const createBanner = async (req, res) => {
       secondaryButtonText,
       secondaryButtonLink,
       isActive: !!isActive,
+      order: order ?? 0,
       createdBy: req.user.userId,
     });
 
@@ -133,13 +128,8 @@ const updateBanner = async (req, res) => {
       secondaryButtonText,
       secondaryButtonLink,
       isActive,
+      order,
     } = req.body;
-
-    // Switching this banner on deactivates every other one first, so
-    // there's never more than one active banner at a time.
-    if (isActive && !banner.isActive) {
-      await Banner.updateMany({ _id: { $ne: banner._id } }, { isActive: false });
-    }
 
     banner.badge = badge ?? banner.badge;
     banner.title = title ?? banner.title;
@@ -152,6 +142,7 @@ const updateBanner = async (req, res) => {
     banner.secondaryButtonText = secondaryButtonText ?? banner.secondaryButtonText;
     banner.secondaryButtonLink = secondaryButtonLink ?? banner.secondaryButtonLink;
     banner.isActive = isActive ?? banner.isActive;
+    banner.order = order ?? banner.order;
 
     await banner.save();
 
@@ -206,7 +197,7 @@ const deleteBanner = async (req, res) => {
 
 module.exports = {
   getBanners,
-  getActiveBanner,
+  getActiveBanners,
   createBanner,
   updateBanner,
   deleteBanner,

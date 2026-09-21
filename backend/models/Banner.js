@@ -67,11 +67,16 @@ const bannerSchema = new mongoose.Schema(
       default: "",
     },
 
-    // Only one banner should be active (shown on the homepage) at a
-    // time - enforced in the controller, not here.
+    // Multiple banners can be active at once (they rotate as a slider on
+    // the homepage) - `order` controls the sequence, lowest first.
     isActive: {
       type: Boolean,
       default: false,
+    },
+
+    order: {
+      type: Number,
+      default: 0,
     },
 
     createdBy: {
