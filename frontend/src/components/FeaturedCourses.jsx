@@ -22,7 +22,7 @@ export default function FeaturedCourses() {
 
   useEffect(() => {
     api
-      .get("/courses?limit=20")
+      .get("/courses?featured=true&limit=20")
       .then((res) => setCourses(res.data.courses))
       .catch(() => setCourses([]))
       .finally(() => setLoading(false));

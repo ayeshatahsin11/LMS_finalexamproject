@@ -97,6 +97,14 @@ export default function CourseDetailsPage() {
         ]}
       />
 
+      {/* Thumbnail banner - only shown if the instructor uploaded one */}
+      {course.thumbnail && (
+        <div className="w-full h-56 md:h-72 rounded-xl overflow-hidden mb-8 border border-border">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
+        </div>
+      )}
+
       {/* Header */}
       <div className="grid md:grid-cols-3 gap-8 mb-10">
         <div className="md:col-span-2">

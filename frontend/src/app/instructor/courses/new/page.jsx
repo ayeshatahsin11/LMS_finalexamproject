@@ -8,6 +8,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import ErrorMessage from "@/components/ErrorMessage";
 import api from "@/lib/axios";
 import { CATEGORIES, LEVELS } from "@/lib/constants";
+import ImageUpload from "@/components/ImageUpload";
 
 function NewCourseForm() {
   const router = useRouter();
@@ -18,6 +19,7 @@ function NewCourseForm() {
     category: CATEGORIES[0],
     level: LEVELS[0],
     thumbnail: "",
+    isFeatured: false,
   });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -100,19 +102,21 @@ function NewCourseForm() {
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-text mb-1.5">
-            Thumbnail URL <span className="text-text-faint font-normal">(optional)</span>
-          </label>
+        <ImageUpload
+          label="Course thumbnail (optional)"
+          value={form.thumbnail}
+          onUploaded={(url) => setForm({ ...form, thumbnail: url })}
+        />
+
+        <label className="flex items-center gap-2 text-sm text-text">
           <input
-            type="url"
-            name="thumbnail"
-            className="input-field"
-            value={form.thumbnail}
-            onChange={handleChange}
-            placeholder="https://..."
+            type="checkbox"
+            checked={form.isFeatured}
+            onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })}
+            className="h-4 w-4 accent-purple"
           />
-        </div>
+          Show in "Popular courses" on the homepage
+        </label>
 
         <button type="submit" disabled={submitting} className="btn-primary mt-2">
           {submitting ? "Creating..." : "Create course & add lessons"}

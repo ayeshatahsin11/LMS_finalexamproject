@@ -12,6 +12,7 @@ import ErrorMessage from "@/components/ErrorMessage";
 import SuccessMessage from "@/components/SuccessMessage";
 import LessonManager from "@/components/LessonManager";
 import EnrolledStudents from "@/components/EnrolledStudents";
+import ImageUpload from "@/components/ImageUpload";
 import { useAutoDismiss } from "@/lib/useAutoDismiss";
 
 export default function ManageCourseContent() {
@@ -45,6 +46,7 @@ export default function ManageCourseContent() {
         category: courseRes.data.course.category,
         level: courseRes.data.course.level,
         thumbnail: courseRes.data.course.thumbnail || "",
+        isFeatured: courseRes.data.course.isFeatured || false,
       });
       setLessons(lessonsRes.data.lessons);
       setEnrollments(enrollRes.data.enrollments);
@@ -160,10 +162,21 @@ export default function ManageCourseContent() {
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-text mb-1.5">Thumbnail URL</label>
-          <input type="url" name="thumbnail" className="input-field" value={form.thumbnail} onChange={handleFormChange} placeholder="https://..." />
-        </div>
+        <ImageUpload
+          label="Course thumbnail"
+          value={form.thumbnail}
+          onUploaded={(url) => setForm({ ...form, thumbnail: url })}
+        />
+
+        <label className="flex items-center gap-2 text-sm text-text">
+          <input
+            type="checkbox"
+            checked={form.isFeatured}
+            onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })}
+            className="h-4 w-4 accent-purple"
+          />
+          Show in "Popular courses" on the homepage
+        </label>
 
         <button type="submit" disabled={saving} className="btn-primary self-start mt-2">
           {saving ? "Saving..." : "Save details"}
