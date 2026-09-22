@@ -216,12 +216,12 @@ export default function ManageUsersContent() {
                       ) : (
                         <div className="flex flex-col gap-4">
                           {enrollments.map((e) => (
-                            <div key={e._id} className="flex items-center gap-4">
-                              <div className="flex-1 min-w-0">
+                            <div key={e._id} className="flex items-center gap-3 sm:gap-4 flex-wrap">
+                              <div className="flex-1 min-w-[140px]">
                                 <p className="text-sm text-text truncate">{e.course?.title}</p>
                                 <p className="text-xs text-text-faint">{e.course?.category}</p>
                               </div>
-                              <div className="w-40 shrink-0">
+                              <div className="w-28 sm:w-40 shrink-0">
                                 <ProgressBar percent={e.progressPercent} />
                               </div>
                               <span

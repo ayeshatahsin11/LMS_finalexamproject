@@ -7,6 +7,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import ErrorMessage from "@/components/ErrorMessage";
 import SuccessMessage from "@/components/SuccessMessage";
 import RowSkeleton from "@/components/RowSkeleton";
+import ImageUpload from "@/components/ImageUpload";
 import { useAutoDismiss } from "@/lib/useAutoDismiss";
 
 const EMPTY_FORM = {
@@ -229,11 +230,9 @@ export default function ManageBannersContent() {
               <option value="video">Video</option>
             </select>
           </div>
-          {form.mediaType !== "none" && (
+          {form.mediaType === "video" && (
             <div>
-              <label className="block text-sm font-medium text-text mb-1.5">
-                {form.mediaType === "image" ? "Image URL" : "Video URL (YouTube or direct file)"}
-              </label>
+              <label className="block text-sm font-medium text-text mb-1.5">Video URL (YouTube or direct file)</label>
               <input
                 type="url"
                 name="mediaUrl"
@@ -245,6 +244,14 @@ export default function ManageBannersContent() {
             </div>
           )}
         </div>
+
+        {form.mediaType === "image" && (
+          <ImageUpload
+            label="Banner image"
+            value={form.mediaUrl}
+            onUploaded={(url) => setForm({ ...form, mediaUrl: url })}
+          />
+        )}
 
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
@@ -340,8 +347,13 @@ export default function ManageBannersContent() {
             const isBusy = busyId === b._id;
             return (
               <div key={b._id} className="flex items-center gap-4 px-5 py-4 flex-wrap">
-                <div className="h-10 w-10 shrink-0 rounded-lg bg-surface-hover flex items-center justify-center">
-                  <ImageIcon size={18} className="text-text-faint" />
+                <div className="h-10 w-10 shrink-0 rounded-lg bg-surface-hover flex items-center justify-center overflow-hidden">
+                  {b.mediaType === "image" && b.mediaUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={b.mediaUrl} alt={b.title} className="h-full w-full object-cover" />
+                  ) : (
+                    <ImageIcon size={18} className="text-text-faint" />
+                  )}
                 </div>
 
                 <div className="flex-1 min-w-[180px]">

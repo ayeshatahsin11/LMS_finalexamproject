@@ -22,7 +22,7 @@ const DEFAULT_BANNER = {
   secondaryButtonLink: "/register",
 };
 
-const AUTOPLAY_MS = 3000;
+const AUTOPLAY_MS = 4000;
 
 export default function Hero() {
   const [banners, setBanners] = useState([DEFAULT_BANNER]);

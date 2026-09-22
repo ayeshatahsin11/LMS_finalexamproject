@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Users, GraduationCap, ShieldCheck, ArrowRight, Plus, BookOpen, ImageIcon } from "lucide-react";
+import { Users, GraduationCap, ShieldCheck, ArrowRight, Plus, BookOpen, ImageIcon, LayoutList } from "lucide-react";
 import api from "@/lib/axios";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -76,7 +76,7 @@ export default function AdminDashboardContent() {
       )}
 
       {/* Quick actions */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         <Link href="/admin/users" className="card card-hover p-6 flex flex-col gap-3">
           <Users size={20} className="text-purple" />
           <h3 className="font-serif text-lg text-text">Manage users</h3>
@@ -84,6 +84,17 @@ export default function AdminDashboardContent() {
             Search accounts, change roles, activate/deactivate, and inspect student progress.
           </p>
           <span className="text-sm text-purple flex items-center gap-1">
+            Go there <ArrowRight size={14} />
+          </span>
+        </Link>
+
+        <Link href="/admin/courses" className="card card-hover p-6 flex flex-col gap-3">
+          <LayoutList size={20} className="text-success" />
+          <h3 className="font-serif text-lg text-text">Manage courses</h3>
+          <p className="text-sm text-text-muted flex-1">
+            Every course on the platform, from any instructor - published or still a draft.
+          </p>
+          <span className="text-sm text-success flex items-center gap-1">
             Go there <ArrowRight size={14} />
           </span>
         </Link>
