@@ -35,9 +35,9 @@ export default function InstructorDashboardContent() {
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
       <Breadcrumbs items={breadcrumbItems} />
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-1">
         <h1 className="text-3xl">Welcome back, {user?.name?.split(" ")[0]}</h1>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <Link href="/instructor/my-courses" className="btn-outline">
             <ListTree size={16} className="mr-1" /> Manage lessons
           </Link>
@@ -111,7 +111,7 @@ export default function InstructorDashboardContent() {
             <Link
               key={course._id}
               href={`/instructor/courses/${course._id}`}
-              className="flex items-center gap-4 px-5 py-4 hover:bg-surface-hover transition"
+              className="flex items-center gap-4 px-5 py-4 hover:bg-surface-hover transition flex-wrap"
             >
               <div className="flex-1 min-w-0">
                 <h3 className="font-serif text-base text-text truncate">{course.title}</h3>

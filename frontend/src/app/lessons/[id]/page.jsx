@@ -125,7 +125,7 @@ export default function LessonViewerPage() {
           <h1 className="text-2xl">{lesson.title}</h1>
           {lesson.description && <p className="text-text-muted mt-2">{lesson.description}</p>}
 
-          <div className="flex items-center justify-between mt-8">
+          <div className="flex items-center justify-between mt-8 flex-wrap gap-3">
             <button
               disabled={!prevLesson}
               onClick={() => prevLesson && router.push(`/lessons/${prevLesson._id}`)}
