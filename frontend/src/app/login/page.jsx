@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import ErrorMessage from "@/components/ErrorMessage";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -63,12 +64,10 @@ export default function LoginPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-text mb-1.5">Password</label>
-              <input
-                type="password"
+              <PasswordInput
                 name="password"
                 required
                 autoComplete="current-password"
-                className="input-field"
                 value={form.password}
                 onChange={handleChange}
                 placeholder="••••••••"

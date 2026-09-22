@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import ErrorMessage from "@/components/ErrorMessage";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -74,13 +75,11 @@ export default function RegisterPage() {
 
             <div>
               <label className="block text-sm font-medium text-text mb-1.5">Password</label>
-              <input
-                type="password"
+              <PasswordInput
                 name="password"
                 required
                 minLength={6}
                 autoComplete="new-password"
-                className="input-field"
                 value={form.password}
                 onChange={handleChange}
                 placeholder="At least 6 characters"

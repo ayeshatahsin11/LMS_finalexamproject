@@ -9,6 +9,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import ErrorMessage from "@/components/ErrorMessage";
 import SuccessMessage from "@/components/SuccessMessage";
 import Modal from "@/components/Modal";
+import PasswordInput from "@/components/PasswordInput";
 import { useAutoDismiss } from "@/lib/useAutoDismiss";
 
 const MAX_PASSWORD_ATTEMPTS = 5;
@@ -200,12 +201,10 @@ export default function ProfileContent() {
 
         <div>
           <label className="block text-sm font-medium text-text mb-1.5">Current password</label>
-          <input
-            type="password"
+          <PasswordInput
             name="currentPassword"
             required
             autoComplete="current-password"
-            className="input-field"
             value={passwordForm.currentPassword}
             onChange={handlePasswordChange}
           />
@@ -213,13 +212,11 @@ export default function ProfileContent() {
 
         <div>
           <label className="block text-sm font-medium text-text mb-1.5">New password</label>
-          <input
-            type="password"
+          <PasswordInput
             name="newPassword"
             required
             minLength={6}
             autoComplete="new-password"
-            className="input-field"
             value={passwordForm.newPassword}
             onChange={handlePasswordChange}
             placeholder="At least 6 characters"
