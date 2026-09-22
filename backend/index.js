@@ -15,6 +15,7 @@ const enrollmentRoutes = require("./routes/enrollmentRoutes");
 const userRoutes = require("./routes/userRoutes");
 const bannerRoutes = require("./routes/bannerRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
 // Connect MongoDB
 connectDB();
 
@@ -52,6 +53,8 @@ app.use("/api/users", userRoutes);
 app.use("/api/banners", bannerRoutes);
 
 app.use("/api/upload", uploadRoutes);
+
+app.use("/api/categories", categoryRoutes);
 
 app.get("/", (req, res) => {
   res.json({
