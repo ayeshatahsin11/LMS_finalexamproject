@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Users, GraduationCap, ShieldCheck, ArrowRight, Plus, BookOpen, ImageIcon, LayoutList } from "lucide-react";
+import { Users, GraduationCap, ShieldCheck, ArrowRight, Plus, BookOpen, ImageIcon, LayoutList, LayoutGrid } from "lucide-react";
 import api from "@/lib/axios";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -95,6 +95,17 @@ export default function AdminDashboardContent() {
             Every course on the platform, from any instructor - published or still a draft.
           </p>
           <span className="text-sm text-success flex items-center gap-1">
+            Go there <ArrowRight size={14} />
+          </span>
+        </Link>
+
+        <Link href="/admin/categories" className="card card-hover p-6 flex flex-col gap-3">
+          <LayoutGrid size={20} className="text-indigo" />
+          <h3 className="font-serif text-lg text-text">Manage categories</h3>
+          <p className="text-sm text-text-muted flex-1">
+            Add, hide or reorder course categories, with their own icon and color.
+          </p>
+          <span className="text-sm text-indigo flex items-center gap-1">
             Go there <ArrowRight size={14} />
           </span>
         </Link>

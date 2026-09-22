@@ -1,28 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import RequireAuth from "@/components/RequireAuth";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ErrorMessage from "@/components/ErrorMessage";
 import api from "@/lib/axios";
-import { CATEGORIES, LEVELS } from "@/lib/constants";
+import { LEVELS } from "@/lib/constants";
+import { useCategories } from "@/lib/useCategories";
 import ImageUpload from "@/components/ImageUpload";
 
 function NewCourseForm() {
   const router = useRouter();
   const { user } = useAuth();
+  const { categories } = useCategories();
   const [form, setForm] = useState({
     title: "",
     description: "",
-    category: CATEGORIES[0],
+    category: "",
     level: LEVELS[0],
     thumbnail: "",
     isFeatured: false,
   });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  // Categories load asynchronously - default to the first one as soon
+  // as they arrive, but don't stomp on a choice the instructor already made.
+  useEffect(() => {
+    if (!form.category && categories.length > 0) {
+      setForm((f) => (f.category ? f : { ...f, category: categories[0].name }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categories]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -86,9 +97,10 @@ function NewCourseForm() {
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text mb-1.5">Category</label>
-            <select name="category" className="input-field" value={form.category} onChange={handleChange}>
-              {CATEGORIES.map((c) => (
-                <option key={c} value={c}>{c}</option>
+            <select name="category" required className="input-field" value={form.category} onChange={handleChange}>
+              {categories.length === 0 && <option value="">Loading categories...</option>}
+              {categories.map((c) => (
+                <option key={c._id} value={c.name}>{c.name}</option>
               ))}
             </select>
           </div>

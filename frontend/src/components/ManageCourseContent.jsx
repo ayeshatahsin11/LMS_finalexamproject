@@ -5,7 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { Eye, EyeOff, Trash2 } from "lucide-react";
 import api from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
-import { CATEGORIES, LEVELS } from "@/lib/constants";
+import { LEVELS } from "@/lib/constants";
+import { useCategories } from "@/lib/useCategories";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import LoadingScreen from "@/components/LoadingScreen";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -19,6 +20,7 @@ export default function ManageCourseContent() {
   const { id } = useParams();
   const router = useRouter();
   const { user } = useAuth();
+  const { categories } = useCategories();
 
   const [course, setCourse] = useState(null);
   const [lessons, setLessons] = useState([]);
@@ -151,7 +153,10 @@ export default function ManageCourseContent() {
           <div>
             <label className="block text-sm font-medium text-text mb-1.5">Category</label>
             <select name="category" className="input-field" value={form.category} onChange={handleFormChange}>
-              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              {categories.map((c) => <option key={c._id} value={c.name}>{c.name}</option>)}
+              {form.category && !categories.some((c) => c.name === form.category) && (
+                <option value={form.category}>{form.category} (hidden)</option>
+              )}
             </select>
           </div>
           <div>

@@ -3,7 +3,8 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import api from "@/lib/axios";
-import { CATEGORIES, LEVELS } from "@/lib/constants";
+import { LEVELS } from "@/lib/constants";
+import { useCategories } from "@/lib/useCategories";
 import CourseCard from "@/components/CourseCard";
 import CourseGridSkeleton from "@/components/CourseGridSkeleton";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -12,6 +13,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 function CoursesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { categories } = useCategories();
 
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");
@@ -117,9 +119,9 @@ function CoursesContent() {
           className="input-field md:w-48"
         >
           <option value="">All categories</option>
-          {CATEGORIES.map((c) => (
-            <option key={c} value={c}>
-              {c}
+          {categories.map((c) => (
+            <option key={c._id} value={c.name}>
+              {c.name}
             </option>
           ))}
         </select>
