@@ -4,12 +4,15 @@ const reviewSchema = new mongoose.Schema(
   {
     // Optional and sparse-unique: a real user can only ever have ONE
     // review (enforced by the sparse unique index below), but this can
-    // also be null for the original seeded testimonials, which aren't
-    // tied to a real account.
+    // also be left unset entirely for the original seeded testimonials,
+    // which aren't tied to a real account. IMPORTANT: no `default` here
+    // - a sparse index only ignores documents where the field is truly
+    // absent, not documents where it's present-but-null, so setting a
+    // default of null would make every seeded review collide as
+    // duplicates of each other.
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      default: null,
     },
 
     // Denormalized at write time so a card never needs a second lookup,

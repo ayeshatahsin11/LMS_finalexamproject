@@ -54,6 +54,15 @@ const run = async () => {
   await mongoose.connect(process.env.DATABASE_URL);
   console.log("Connected to database.");
 
+  // One-time cleanup: an earlier version of the Review model set
+  // `user: null` explicitly (instead of leaving it unset), which the
+  // sparse unique index treats as a real, colliding value. Strip that
+  // stale explicit null so it's truly absent, matching the fixed model.
+  const cleaned = await Review.updateMany({ user: null }, { $unset: { user: "" } });
+  if (cleaned.modifiedCount > 0) {
+    console.log(`Cleaned up ${cleaned.modifiedCount} review(s) with a stale null user field.`);
+  }
+
   for (const r of SEED_REVIEWS) {
     const exists = await Review.findOne({ name: r.name, quote: r.quote });
     if (exists) {

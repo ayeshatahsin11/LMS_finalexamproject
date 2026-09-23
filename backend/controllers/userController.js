@@ -1,5 +1,8 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
+const Course = require("../models/Course");
+const Enrollment = require("../models/Enrollment");
+const Review = require("../models/Review");
 
 // Logged-in user views their own profile.
 const getMyProfile = async (req, res) => {
@@ -202,6 +205,16 @@ const updateUserByAdmin = async (req, res) => {
 };
 
 // Admin: permanently delete a user account.
+//
+// This is intentionally NOT a cascading delete - hard-deleting an
+// instructor with live courses (or a student with live enrollments)
+// would leave those documents pointing at a user that no longer
+// exists, which breaks anything that populates/display that person
+// (e.g. "taught by [nothing]" on a course card). Real-world platforms
+// avoid this by either blocking the delete or soft-deleting instead;
+// this app already has a soft-delete path (isActive, see
+// updateUserByAdmin above), so hard delete is only allowed once there's
+// nothing left that would be orphaned by it.
 const deleteUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -212,6 +225,30 @@ const deleteUser = async (req, res) => {
         message: "User not found",
       });
     }
+
+    if (user.role === "instructor") {
+      const courseCount = await Course.countDocuments({ instructor: user._id });
+      if (courseCount > 0) {
+        return res.status(409).json({
+          success: false,
+          message: `This instructor still has ${courseCount} course(s). Reassign or remove those first, or deactivate the account instead of deleting it.`,
+        });
+      }
+    }
+
+    if (user.role === "student") {
+      const enrollmentCount = await Enrollment.countDocuments({ student: user._id });
+      if (enrollmentCount > 0) {
+        return res.status(409).json({
+          success: false,
+          message: `This student still has ${enrollmentCount} enrollment(s). Deactivate the account instead of deleting it, to keep their progress history intact.`,
+        });
+      }
+    }
+
+    // Not blocking data, but no reason to leave a ghost review behind
+    // for an account that no longer exists.
+    await Review.deleteOne({ user: user._id });
 
     await user.deleteOne();
 
