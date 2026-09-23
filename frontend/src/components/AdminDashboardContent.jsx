@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Users, GraduationCap, ShieldCheck, ArrowRight, Plus, BookOpen, ImageIcon, LayoutList, LayoutGrid } from "lucide-react";
+import { Users, GraduationCap, ShieldCheck, ArrowRight, Plus, BookOpen, ImageIcon, LayoutList, LayoutGrid, MessageSquare } from "lucide-react";
 import api from "@/lib/axios";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -106,6 +106,17 @@ export default function AdminDashboardContent() {
             Add, hide or reorder course categories, with their own icon and color.
           </p>
           <span className="text-sm text-indigo flex items-center gap-1">
+            Go there <ArrowRight size={14} />
+          </span>
+        </Link>
+
+        <Link href="/admin/reviews" className="card card-hover p-6 flex flex-col gap-3">
+          <MessageSquare size={20} className="text-danger" />
+          <h3 className="font-serif text-lg text-text">Manage reviews</h3>
+          <p className="text-sm text-text-muted flex-1">
+            Moderate what students and instructors have written on the homepage.
+          </p>
+          <span className="text-sm text-danger flex items-center gap-1">
             Go there <ArrowRight size={14} />
           </span>
         </Link>

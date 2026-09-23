@@ -4,7 +4,7 @@ export default function ReviewCard({ story }) {
   return (
     <div className="card p-6 flex flex-col gap-4 mb-6">
       <Quote size={22} className="text-purple/50" />
-      <p className="text-sm text-text-muted flex-1">"{story.quote}"</p>
+      <p className="text-sm text-text-muted flex-1">&quot;{story.quote}&quot;</p>
       <div className="flex gap-0.5">
         {Array.from({ length: 5 }).map((_, idx) => (
           <Star
@@ -23,7 +23,6 @@ export default function ReviewCard({ story }) {
           <p className="text-xs text-text-faint truncate">{story.role}</p>
         </div>
       </div>
-      <p className="text-xs text-purple">{story.course}</p>
     </div>
   );
 }
