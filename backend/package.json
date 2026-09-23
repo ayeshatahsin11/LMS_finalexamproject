@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "seed:categories": "node scripts/seedCategories.js"
+    "seed:categories": "node scripts/seedCategories.js",
+    "seed:reviews": "node scripts/seedReviews.js"
   },
   "keywords": [],
   "author": "",
