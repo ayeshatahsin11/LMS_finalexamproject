@@ -1,8 +1,9 @@
 const express = require("express");
-const { uploadImage } = require("../controllers/uploadController");
+const { uploadImage, uploadVideoFile } = require("../controllers/uploadController");
 const { protect } = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
 const upload = require("../middleware/upload");
+const uploadVideo = require("../middleware/uploadVideo");
 
 const router = express.Router();
 
@@ -13,6 +14,15 @@ router.post(
   authorizeRoles("instructor", "admin"),
   upload.single("image"),
   uploadImage
+);
+
+// Only instructors/admins upload lesson videos.
+router.post(
+  "/video",
+  protect,
+  authorizeRoles("instructor", "admin"),
+  uploadVideo.single("video"),
+  uploadVideoFile
 );
 
 module.exports = router;

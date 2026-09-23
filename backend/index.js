@@ -79,6 +79,17 @@ app.use((req, res) => {
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error(err.stack);
+
+  // Multer throws a plain "File too large" error with no statusCode -
+  // give it a proper 413 and a message that names the actual limit
+  // instead of falling through to a generic 500.
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return res.status(413).json({
+      success: false,
+      message: "File is too large.",
+    });
+  }
+
   res.status(err.statusCode || 500).json({
     success: false,
     message: err.message || "Server error",
