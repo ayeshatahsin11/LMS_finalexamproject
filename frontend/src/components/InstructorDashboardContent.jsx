@@ -39,7 +39,7 @@ export default function InstructorDashboardContent() {
         <h1 className="text-3xl">Welcome back, {user?.name?.split(" ")[0]}</h1>
         <div className="flex items-center gap-3 flex-wrap">
           <Link href="/instructor/my-courses" className="btn-outline">
-            <ListTree size={16} className="mr-1" /> Manage lessons
+            <ListTree size={16} className="mr-1" /> Manage courses
           </Link>
           <Link href="/instructor/courses/new" className="btn-primary">
             <Plus size={16} className="mr-1" /> New course

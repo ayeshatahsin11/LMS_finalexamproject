@@ -43,7 +43,7 @@ const createCourse = async (req, res) => {
   }
 };
 
-// Public course listing: supports search (title/description),
+// Public course listing: supports search (title/category),
 // category & level filters, and pagination.
 const getCourses = async (req, res) => {
   try {
@@ -54,7 +54,7 @@ const getCourses = async (req, res) => {
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
+        { category: { $regex: search, $options: "i" } },
       ];
     }
     if (category) query.category = category;

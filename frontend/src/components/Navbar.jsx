@@ -3,13 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Menu, X, Search as SearchIcon } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import SearchBar from "@/components/SearchBar";
 
 export default function Navbar() {
   const { user, logout, loading } = useAuth();
   const router = useRouter();
-  const [search, setSearch] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
   const closeMenu = () => setMenuOpen(false);
@@ -18,12 +18,6 @@ export default function Navbar() {
     logout();
     closeMenu();
     router.push("/login");
-  };
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    closeMenu();
-    router.push(search.trim() ? `/courses?search=${encodeURIComponent(search.trim())}` : "/courses");
   };
 
   const dashboardPath =
@@ -76,18 +70,7 @@ export default function Navbar() {
         )}
 
         {/* Search - desktop only, sits inline; mobile gets its own inside the menu */}
-        <form onSubmit={handleSearch} className="flex-1 max-w-md hidden md:block">
-          <div className="relative">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-faint" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search courses..."
-              className="input-field !pl-9 !py-2 text-sm"
-            />
-          </div>
-        </form>
+        <SearchBar className="flex-1 max-w-md hidden md:block" />
 
         {/* Desktop right side */}
         <div className="hidden md:flex items-center gap-5 text-sm ml-auto shrink-0">
@@ -131,18 +114,7 @@ export default function Navbar() {
       {/* Mobile dropdown panel */}
       {menuOpen && (
         <div className="md:hidden border-t border-border bg-bg px-4 sm:px-6 py-5 flex flex-col gap-1">
-          <form onSubmit={handleSearch} className="mb-3">
-            <div className="relative">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-faint" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search courses..."
-                className="input-field !pl-9 !py-2 text-sm"
-              />
-            </div>
-          </form>
+          <SearchBar className="mb-3" onNavigate={closeMenu} />
 
           <NavLink href="/courses" className="py-2.5 text-sm text-text border-b border-border">
             Courses
