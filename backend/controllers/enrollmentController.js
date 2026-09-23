@@ -2,6 +2,37 @@ const Enrollment = require("../models/Enrollment");
 const Course = require("../models/Course");
 const Lesson = require("../models/Lesson");
 
+// Recomputes completedLessons/progressPercent/status from scratch
+// against the course's *current* lessons, instead of trusting whatever
+// was last stored. Without this, progress is just a stale snapshot: if
+// an instructor adds a lesson after a student already hit 100%, nothing
+// would ever bring that percentage back down on its own. This also
+// prunes any completed-lesson ID that no longer exists (e.g. the
+// instructor deleted that lesson), so a stale ID can't inflate the count.
+//
+// Returns true if anything actually changed, so callers reading many
+// enrollments at once only write the ones that need it.
+const syncProgress = async (enrollment) => {
+  const validLessonIds = await Lesson.find({ course: enrollment.course }).distinct("_id");
+  const validIdSet = new Set(validLessonIds.map((lid) => lid.toString()));
+
+  const prunedCompleted = enrollment.completedLessons.filter((lid) => validIdSet.has(lid.toString()));
+  const totalLessons = validLessonIds.length;
+  const newPercent = totalLessons ? Math.round((prunedCompleted.length / totalLessons) * 100) : 0;
+  const newStatus = totalLessons > 0 && newPercent >= 100 ? "completed" : "active";
+
+  const changed =
+    prunedCompleted.length !== enrollment.completedLessons.length ||
+    newPercent !== enrollment.progressPercent ||
+    newStatus !== enrollment.status;
+
+  enrollment.completedLessons = prunedCompleted;
+  enrollment.progressPercent = newPercent;
+  enrollment.status = newStatus;
+
+  return changed;
+};
+
 // Student enrolls themself in a published course.
 const enrollInCourse = async (req, res) => {
   try {
@@ -67,6 +98,14 @@ const getMyEnrollments = async (req, res) => {
       })
       .sort({ createdAt: -1 });
 
+    // Re-check progress against each course's current lesson list before
+    // returning - catches lessons added/removed since the student last
+    // interacted with this course.
+    for (const enrollment of enrollments) {
+      const changed = await syncProgress(enrollment);
+      if (changed) await enrollment.save();
+    }
+
     res.status(200).json({
       success: true,
       count: enrollments.length,
@@ -104,6 +143,11 @@ const getCourseEnrollments = async (req, res) => {
     const enrollments = await Enrollment.find({ course: req.params.courseId })
       .populate("student", "name email");
 
+    for (const enrollment of enrollments) {
+      const changed = await syncProgress(enrollment);
+      if (changed) await enrollment.save();
+    }
+
     res.status(200).json({
       success: true,
       count: enrollments.length,
@@ -118,10 +162,12 @@ const getCourseEnrollments = async (req, res) => {
   }
 };
 
-// Student marks a lesson complete -> recalculates progressPercent.
+// Student marks a lesson complete OR incomplete -> recalculates
+// progressPercent either way. `completed` defaults to true so existing
+// "mark as complete" callers don't need to change.
 const updateProgress = async (req, res) => {
   try {
-    const { lessonId } = req.body;
+    const { lessonId, completed = true } = req.body;
 
     if (!lessonId) {
       return res.status(400).json({
@@ -155,28 +201,24 @@ const updateProgress = async (req, res) => {
       });
     }
 
-    const alreadyCompleted = enrollment.completedLessons.some(
-      (id) => id.toString() === lessonId
+    const isCurrentlyDone = enrollment.completedLessons.some(
+      (lid) => lid.toString() === lessonId
     );
 
-    if (!alreadyCompleted) {
+    if (completed && !isCurrentlyDone) {
       enrollment.completedLessons.push(lessonId);
+    } else if (!completed && isCurrentlyDone) {
+      enrollment.completedLessons = enrollment.completedLessons.filter(
+        (lid) => lid.toString() !== lessonId
+      );
     }
 
-    const totalLessons = await Lesson.countDocuments({ course: enrollment.course });
-    enrollment.progressPercent = totalLessons
-      ? Math.round((enrollment.completedLessons.length / totalLessons) * 100)
-      : 0;
-
-    if (enrollment.progressPercent >= 100) {
-      enrollment.status = "completed";
-    }
-
+    await syncProgress(enrollment);
     await enrollment.save();
 
     res.status(200).json({
       success: true,
-      message: "Progress updated",
+      message: completed ? "Lesson marked complete" : "Lesson marked incomplete",
       enrollment,
     });
   } catch (error) {
@@ -196,6 +238,11 @@ const getUserEnrollments = async (req, res) => {
     const enrollments = await Enrollment.find({ student: req.params.userId })
       .populate("course", "title category level isPublished")
       .sort({ createdAt: -1 });
+
+    for (const enrollment of enrollments) {
+      const changed = await syncProgress(enrollment);
+      if (changed) await enrollment.save();
+    }
 
     res.status(200).json({
       success: true,

@@ -59,11 +59,14 @@ export default function LessonViewerPage() {
 
   const isDone = enrollment?.completedLessons?.some((l) => (l._id || l) === id);
 
-  const handleMarkComplete = async () => {
+  const handleToggleComplete = async () => {
     if (!enrollment) return;
     setMarking(true);
     try {
-      const res = await api.put(`/enrollments/${enrollment._id}/progress`, { lessonId: id });
+      const res = await api.put(`/enrollments/${enrollment._id}/progress`, {
+        lessonId: id,
+        completed: !isDone,
+      });
       setEnrollment(res.data.enrollment);
     } catch (err) {
       setError(err.response?.data?.message || "Could not update progress.");
@@ -135,8 +138,24 @@ export default function LessonViewerPage() {
             </button>
 
             {enrollment && (
-              <button onClick={handleMarkComplete} disabled={marking || isDone} className="btn-primary">
-                {isDone ? "Completed ✓" : marking ? "Saving..." : "Mark as complete"}
+              <button
+                onClick={handleToggleComplete}
+                disabled={marking}
+                className={
+                  isDone
+                    ? "btn-outline border-success/40 text-success hover:bg-success/10 disabled:opacity-60"
+                    : "btn-primary disabled:opacity-60"
+                }
+              >
+                {marking ? (
+                  "Saving..."
+                ) : isDone ? (
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 size={16} /> Completed — mark as undone
+                  </span>
+                ) : (
+                  "Mark as complete"
+                )}
               </button>
             )}
 

@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { GripVertical, Pencil, Trash2, Plus, X } from "lucide-react";
+import { GripVertical, Pencil, Trash2, Plus, X, Link2, Upload } from "lucide-react";
 import api from "@/lib/axios";
 import ErrorMessage from "@/components/ErrorMessage";
+import VideoUpload from "@/components/VideoUpload";
 
 const emptyForm = { title: "", description: "", videoUrl: "", duration: "", isFreePreview: false };
 
@@ -11,12 +12,14 @@ export default function LessonManager({ courseId, lessons, onChange }) {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyForm);
+  const [videoMode, setVideoMode] = useState("link"); // "link" | "upload"
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const openAddForm = () => {
     setForm({ ...emptyForm });
     setEditingId(null);
+    setVideoMode("link");
     setShowForm(true);
   };
 
@@ -29,6 +32,7 @@ export default function LessonManager({ courseId, lessons, onChange }) {
       isFreePreview: lesson.isFreePreview,
     });
     setEditingId(lesson._id);
+    setVideoMode("link");
     setShowForm(true);
   };
 
@@ -40,6 +44,12 @@ export default function LessonManager({ courseId, lessons, onChange }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (!form.videoUrl) {
+      setError("Add a video link or upload a file before saving.");
+      return;
+    }
+
     setSubmitting(true);
     try {
       const payload = { ...form, duration: form.duration ? Number(form.duration) : 0 };
@@ -116,16 +126,47 @@ export default function LessonManager({ courseId, lessons, onChange }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text mb-1.5">Video URL</label>
-            <input
-              type="url"
-              name="videoUrl"
-              required
-              className="input-field"
-              value={form.videoUrl}
-              onChange={handleChange}
-              placeholder="YouTube link or direct video URL"
-            />
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-sm font-medium text-text">Video</label>
+              <div className="flex gap-1 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setVideoMode("link")}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition ${
+                    videoMode === "link" ? "bg-purple/15 text-purple" : "text-text-faint hover:text-text"
+                  }`}
+                >
+                  <Link2 size={12} /> Link
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setVideoMode("upload")}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition ${
+                    videoMode === "upload" ? "bg-purple/15 text-purple" : "text-text-faint hover:text-text"
+                  }`}
+                >
+                  <Upload size={12} /> Upload
+                </button>
+              </div>
+            </div>
+
+            {videoMode === "link" ? (
+              <input
+                type="url"
+                name="videoUrl"
+                className="input-field"
+                value={form.videoUrl}
+                onChange={handleChange}
+                placeholder="YouTube link or direct video URL"
+              />
+            ) : (
+              <VideoUpload
+                value={form.videoUrl}
+                onUploaded={(url, duration) =>
+                  setForm((f) => ({ ...f, videoUrl: url, duration: duration || f.duration }))
+                }
+              />
+            )}
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4 items-end">
