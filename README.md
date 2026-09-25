@@ -9,7 +9,7 @@ categories, the homepage banner, and reviews.
 **Live demo:** [lms-finalexamproject.vercel.app](https://lms-finalexamproject.vercel.app)
 **API base URL:** [lms-backend-n8nu.onrender.com](https://lms-backend-n8nu.onrender.com)
 
-> Full endpoint reference: [`docs/API.md`](docs/API.md)
+API endpoints are described in API docs file, kindly read that.
 
 ---
 
