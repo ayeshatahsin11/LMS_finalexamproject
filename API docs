@@ -1,0 +1,300 @@
+# API Documentation
+
+Base URL (local): `http://localhost:5050/api`
+Base URL (production): `https://lms-backend-n8nu.onrender.com/api`
+
+## Conventions
+
+- All request/response bodies are JSON.
+- Every response has a `success` boolean. Errors also include a `message`
+  string, and sometimes a Mongoose `error` string with more detail.
+- **Auth:** protected routes require an `Authorization: Bearer <token>`
+  header. The token is returned by `POST /auth/register` and `POST /auth/login`.
+- **Roles:** `student`, `instructor`, `admin`. Routes marked with a role
+  require the logged-in user to have that role (`403 Forbidden` otherwise).
+- Timestamps (`createdAt`, `updatedAt`) are included on every resource but
+  omitted below for brevity.
+
+---
+
+## Auth
+
+### `POST /auth/register`
+**Auth:** none
+**Body:**
+```json
+{ "name": "Jane Doe", "email": "jane@example.com", "password": "at least 6 chars", "role": "student" }
+```
+`role` is optional — only `"student"` or `"instructor"` are accepted from the
+public form; anything else (including `"admin"`) silently falls back to
+`"student"`. This is intentional: admin accounts are never created through
+open registration, see the README's "Create your first admin account" section.
+
+**Response `201`:**
+```json
+{ "success": true, "message": "User registered successfully", "user": { "_id", "name", "email", "role" }, "token": "..." }
+```
+
+### `POST /auth/login`
+**Auth:** none
+**Body:** `{ "email": "jane@example.com", "password": "..." }`
+**Response `200`:** same shape as register. `403` if the account has been deactivated.
+
+---
+
+## Users
+
+### `GET /users/me`
+**Auth:** any logged-in user
+Returns the current user's own profile (no password field).
+
+### `PUT /users/me`
+**Auth:** any logged-in user
+**Body:** any of `{ "name", "bio", "avatar" }`
+
+### `PUT /users/me/password`
+**Auth:** any logged-in user
+**Body:** `{ "currentPassword": "...", "newPassword": "..." }`
+
+### `GET /users`
+**Auth:** admin
+All users on the platform.
+
+### `PUT /users/:id`
+**Auth:** admin
+**Body:** any of `{ "role", "isActive" }` — used to promote/demote a user or
+activate/deactivate their account.
+
+### `DELETE /users/:id`
+**Auth:** admin
+Permanently deletes a user. **Blocked (`409`)** if the user is an instructor
+with existing courses, or a student with existing enrollments — deactivate
+(`PUT /users/:id` with `isActive: false`) instead, to avoid leaving courses
+or enrollments pointing at a deleted account. If they have a review, it's
+deleted along with them.
+
+---
+
+## Courses
+
+### `GET /courses`
+**Auth:** none
+**Query params:** `search` (matches title/category), `category`, `level`,
+`featured` (`true`/`false`), `page`, `limit`
+Only returns published courses.
+
+### `GET /courses/my-courses`
+**Auth:** instructor or admin
+The logged-in instructor's own courses — published and draft.
+
+### `GET /courses/all`
+**Auth:** admin
+Every course on the platform, any owner, any publish status.
+
+### `GET /courses/:id`
+**Auth:** optional (guests see published courses only; the owning
+instructor/admin can also view their own draft)
+
+### `POST /courses`
+**Auth:** instructor or admin
+**Body:** `{ "title", "description", "category", "level", "thumbnail", "isFeatured" }`
+New courses start as an unpublished draft (`isPublished: false`).
+
+### `PUT /courses/:id`
+**Auth:** instructor (owner only) or admin
+Same body shape as create; also accepts `isPublished` to publish/unpublish.
+
+### `DELETE /courses/:id`
+**Auth:** instructor (owner only) or admin
+
+---
+
+## Lessons
+
+### `GET /lessons/course/:courseId`
+**Auth:** optional
+Guests and non-enrolled students get a locked list (titles only, except any
+lesson marked `isFreePreview`). Enrolled students, the owning instructor, and
+admins get full lesson content.
+
+### `GET /lessons/:id`
+**Auth:** optional
+Same gating logic as above, for a single lesson.
+
+### `POST /lessons/course/:courseId`
+**Auth:** instructor (owner of that course) or admin
+**Body:** `{ "title", "description", "videoUrl", "duration", "order", "isFreePreview" }`
+`title`, `videoUrl` and `order` are required — the frontend's lesson
+manager computes `order` as "append to the end of the existing list".
+
+### `PUT /lessons/:id`
+**Auth:** instructor (owner) or admin
+
+### `DELETE /lessons/:id`
+**Auth:** instructor (owner) or admin
+Every enrolled student's progress is automatically recalculated against the
+course's new lesson count the next time their enrollment is read.
+
+---
+
+## Enrollments
+
+### `POST /enrollments`
+**Auth:** student
+**Body:** `{ "courseId": "..." }`
+`409` if already enrolled.
+
+### `GET /enrollments/my`
+**Auth:** student
+The logged-in student's own enrollments, each with a freshly recalculated
+`progressPercent` (see "Progress tracking" below).
+
+### `GET /enrollments/course/:courseId`
+**Auth:** instructor (owner of that course) or admin
+Everyone enrolled in one specific course, with progress.
+
+### `GET /enrollments/user/:userId`
+**Auth:** admin
+One specific student's enrollments across every course.
+
+### `PUT /enrollments/:id/progress`
+**Auth:** student (must own the enrollment)
+**Body:** `{ "lessonId": "...", "completed": true }`
+`completed` defaults to `true` if omitted; pass `false` to un-mark a lesson
+(undo). Returns the updated enrollment with a recalculated `progressPercent`.
+
+**Progress tracking:** `progressPercent` is never trusted as a stale stored
+value — every time an enrollment is read (dashboard, instructor's enrolled-
+students view, admin's per-user view) or a lesson is toggled, it's
+recalculated from `completedLessons.length / <course's current lesson
+count>`. This means adding or removing a lesson from a course automatically
+updates every enrolled student's percentage, and a deleted lesson's ID is
+pruned from `completedLessons` instead of quietly inflating the count.
+
+---
+
+## Categories
+
+### `GET /categories`
+**Auth:** none
+Active categories only, each with a live `courseCount` (published courses
+using that category name).
+
+### `GET /categories/all`
+**Auth:** admin
+Every category, including hidden ones.
+
+### `POST /categories`
+**Auth:** admin
+**Body:** `{ "name", "icon", "color", "isActive", "order" }`
+`icon` is a string name from a curated lucide-react icon set (see
+`frontend/src/lib/categoryIcons.js`) — the admin panel provides a visual
+picker so nothing needs to be typed by hand.
+
+### `PUT /categories/:id`
+**Auth:** admin
+Renaming a category cascades: every existing course using the old name is
+updated to the new one, so nothing gets orphaned.
+
+### `DELETE /categories/:id`
+**Auth:** admin
+Existing courses keep their category text either way — they just won't be
+grouped under this category on the homepage/filters anymore.
+
+---
+
+## Banners (homepage hero)
+
+### `GET /banners/active`
+**Auth:** none
+Every currently-active banner, in display order. The frontend shows a
+single static hero if there's one, an auto-rotating slider if there's more
+than one, or its own default content if the list is empty.
+
+### `GET /banners`
+**Auth:** admin
+Every banner, active or not.
+
+### `POST /banners`
+**Auth:** admin
+**Body:** `{ "badge", "title", "highlight", "description", "mediaType", "mediaUrl", "primaryButtonText", "primaryButtonLink", "secondaryButtonText", "secondaryButtonLink", "isActive", "order" }`
+`mediaType` is `"none" | "image" | "video"`.
+
+### `PUT /banners/:id`
+**Auth:** admin
+
+### `DELETE /banners/:id`
+**Auth:** admin
+
+---
+
+## Reviews
+
+### `GET /reviews`
+**Auth:** none
+Visible reviews only, newest first (max 60) — powers the homepage/reviews
+marquee.
+
+### `GET /reviews/all`
+**Auth:** admin
+Every review, including hidden ones.
+
+### `GET /reviews/mine`
+**Auth:** any logged-in user
+The current user's own review, or `null`.
+
+### `POST /reviews`
+**Auth:** any logged-in user
+**Body:** `{ "role", "quote", "rating" }` (`rating` is 1–5)
+One review per account (`409` if you already have one — use `PUT` instead).
+Students need at least one enrollment and instructors need at least one
+course before they're allowed to post (`403` with a clear message otherwise)
+— admins skip this check.
+
+### `PUT /reviews/:id`
+**Auth:** the review's own author
+
+### `DELETE /reviews/:id`
+**Auth:** the review's own author, or admin
+
+### `PATCH /reviews/:id/visibility`
+**Auth:** admin
+Toggles a review's `isVisible` flag — hides it from the public marquee
+without deleting it.
+
+---
+
+## Uploads
+
+Both endpoints accept `multipart/form-data` and return `{ "success": true, "url": "https://res.cloudinary.com/..." }`. Files are streamed straight to Cloudinary — never written to the server's disk.
+
+### `POST /upload/image`
+**Auth:** instructor or admin
+**Form field:** `image` — max 5MB, image files only.
+
+### `POST /upload/video`
+**Auth:** instructor or admin
+**Form field:** `video` — max 100MB, video files only. The response also
+includes `duration` (seconds, read directly from the uploaded file by
+Cloudinary) so the lesson form can auto-fill it.
+
+---
+
+## Error responses
+
+Every error follows the same shape:
+```json
+{ "success": false, "message": "Human-readable explanation" }
+```
+
+Common status codes:
+
+| Code | Meaning |
+|---|---|
+| 400 | Missing/invalid input |
+| 401 | Missing or invalid auth token |
+| 403 | Logged in, but not allowed to do this (wrong role, not the owner, not eligible yet) |
+| 404 | Resource not found |
+| 409 | Conflict (already enrolled, already reviewed, duplicate category name, etc.) |
+| 413 | Uploaded file too large |
+| 500 | Unexpected server error |
