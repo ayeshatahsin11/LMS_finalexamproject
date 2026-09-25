@@ -32,9 +32,28 @@ const apiLimiter = rateLimit({
 });
 app.use("/api", apiLimiter);
 
+// `CLIENT_URL` can be one URL or a comma-separated list (useful once
+// there's more than one frontend deployment - a custom domain alongside
+// the default Vercel URL, for example). Trailing slashes are stripped
+// here because a browser's Origin header never has one - if the env var
+// has a stray "/" at the end (an easy copy-paste mistake), a plain
+// string comparison would otherwise silently reject every request.
+const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:3000")
+  .split(",")
+  .map((url) => url.trim().replace(/\/$/, ""));
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: (origin, callback) => {
+      // `origin` is undefined for same-origin requests and tools that
+      // don't send one at all (curl, Postman, server-to-server) - let
+      // those through rather than blocking anything without an Origin header.
+      if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
